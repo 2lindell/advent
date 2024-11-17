@@ -5,7 +5,7 @@
 		L - Location
 		O - Object with
 			D - Description based on property 0, 1, or 2
-		M - Message
+		M - Message (with additional M for "modified")
 	I also commented if a description/scenery object came from Colossal Cave Revisited (ccr) or the Inform 6 version (I6)]
 
 Part 1 - Setup
@@ -90,12 +90,6 @@ Understand "nasty/mean/threatening/little" as a dwarf. A dwarf is always undescr
 Section - Treasures
 
 A treasure is a kind of thing. A treasure has a number called deposit points. The deposit points of a treasure is usually 10. A treasure can be found, unfound, or elusive. A treasure is usually unfound.
-After taking a treasure (this is the take treasure rule):
-	if the location is Inside_Building, decrease the score by deposit points of the noun;
-	continue the action.
-After dropping a treasure in Inside_Building (this is the deposit treasure rule):
-	increase the score by deposit points of the noun;
-	say [I6]"Safely deposited." (A).
 After writing a paragraph about a treasure (called the item):
 	if the item is unfound:
 		now the item is found;
@@ -280,8 +274,13 @@ The can't take what's already taken rule response (A) is [M24]"You are already c
 The can't take scenery rule response (A) is [M25]"You can't be serious!".
 The can't take what's fixed in place rule response (A) is [M25]"You can't be serious!".
 The can't take other people rule response (A) is [M25]"You can't be serious!".
-The can't exceed carrying capacity rule response (A) is [M92]"You can't carry anything more.  You'll have to drop something first."
 The standard report taking rule response (A) is [M54]"OK."
+
+Check an actor taking (this is the advent can't exeed carrying capacity rule):
+	if the number of things enclosed by the actor is at least the carrying capacity of the actor:
+		if the actor is the player, say [M92]"You can't carry anything more.  You'll have to drop something first." (A);
+		stop the action.
+The advent can't exeed carrying capacity rule is listed instead of the can't exceed carrying capacity rule in the check taking rulebook.
 
 Understand the commands "release", "free", and "dump" as "drop". Understand "throw [something]" as dropping when the location does not enclose another person.
 The can't drop what's not held rule response (A) is [M29]"You aren't carrying it!"
@@ -470,7 +469,7 @@ Understand "hours" as a mistake ("[bracket]In this implementation, collosal cave
 Understand "[old magic]" or "say [old magic]" as a mistake ([M50]"Good try, but that is an old worn-out magic word.").
 
 Understand "help"[ or "?"] as a mistake ([M51]"I know of places, actions, and things.  Most of my vocabulary describes places and is used to move you there.  To move, try words like forest, building, downstream, enter, east, west, north, south, up, or down.  I know about a few special objects, like a black rod hidden in the cave.  These objects can be manipulated using some of the action words that I know.  Usually you will need to give both the object and action words (in either order), but sometimes I can infer the object from the verb alone.  Some objects also imply verbs; in particular, 'inventory' implies 'take inventory', which causes me to give you a list of what you're carrying.  The objects have side effects; for instance, the rod scares the bird.  Usually people having trouble moving just need to try a few more words.  Usually people trying unsuccessfully to manipulate an object are attempting something beyond their (or my!) capabilities and should try a completely different tack.  To speed the game you can sometimes move long distances with a single word.  For example, 'building' usually gets you to the building from anywhere above ground except when lost in the forest.  Also, note that cave passages turn a lot, and that leaving a room to the north does not guarantee entering the next from the south.  Good luck!").
-After reading a command:
+After reading a command (this is the convert question mark rule):
 	if the player's command matches the regular expression "^\?", change the text of the player's command to "help". 
 
 Understand "dig" or "excavate" as a mistake ([M66]"Digging without a shovel is quite impractical. Even with a shovel progress is unlikely.")
@@ -483,7 +482,7 @@ Understand "info" or "information" as a mistake ([M142]"If you want to end your 
 
 Understand "swim" as a mistake ([M147]"I don't know how.")
 
-Understand "stupid" as a mistake ([M79]"Watch it!").
+Understand "stupid" or "idiot" as a mistake ([M79]"Watch it!"). [This is a change from the original to avoid being flagged for adult language]
 
 Section - Tokens
 
@@ -555,7 +554,7 @@ The yes or no question internal rule response (A) is [MT]"Please answer the ques
 
 Section - All
 
-Rule for deciding whether all includes something inside a container: it does not.
+Rule for deciding whether all includes something inside a container (this is the exclude things in a container from all rule): it does not.
 
 Section - Initial appearances
 
@@ -1001,16 +1000,12 @@ Instead of taking the stream:
 	otherwise try filling the bottle.
 Instead of inserting the stream into the bottle, try filling the bottle.
 Instead of inserting the stream into something, say [M104]"You have nothing in which to carry it."
-Instead of inserting the ming vase into the stream:
-	now the ming vase is nowhere;
-	move shards to location;
-	say [M145]"The sudden change in temperature has delicately shattered the vase."
 Instead of inserting the bottle into the stream, try filling the bottle.
 Instead of inserting something into the stream:
 	now the noun is nowhere;
-	say "[The noun] washes away with the stream."
+	say [I6]"[The noun] washes away with the stream."
 Instead of entering the stream, say [M70]"Your feet are now wet."
-Before filling something when the stream is in the location: say "(from the stream)[command clarification break]".
+Before filling something when the stream is in the location, say "(from the stream)[command clarification break]".
 Instead of examining the stream when the location is Inside_Building, try examining the spring.
 Does the player mean drinking the stream: it is likely.
 Rule for clarifying the parser's choice of the stream while drinking: say "(from the stream)[command clarification break]".
@@ -1043,13 +1038,18 @@ Understand "inside/building/well/house/wellhouse" as Inside_Building.
 Understand "outdoors" as outside when the location is Inside_Building.
 Rule for supplying a missing noun while entering and the location is Inside_Building: now the noun is west.
 [L79]Understand "stream" or "downstream" as a mistake ("The stream flows out through a pair of 1 foot diameter sewer pipes.  It would be advisable to use the exit.") when the location is Inside_Building.
-
 Instead of saying xyzzy in Inside_Building:
 	unless In_Debris_Room is visited, continue the action;
 	move the player to In_Debris_Room as going.
 Instead of saying plugh in Inside_Building:
 	unless At_Y2 is visited, continue the action;
 	move the player to At_Y2 as going.
+After taking a treasure in Inside_Building:
+	decrease the score by deposit points of the noun;
+	continue the action.
+After dropping a treasure in Inside_Building:
+	increase the score by deposit points of the noun;
+	say [I6]"Safely deposited."
 
 [ccr]A spring is scenery in Inside_Building. "The stream flows out through a pair of 1 foot diameter sewer pipes."
 Understand "large" as the spring.
@@ -1060,7 +1060,6 @@ Understand "pipe/one/sewer-pipes" as the sewer pipes.
 [O1]A set of keys is a plural-named thing in Inside_Building with indefinite article "a" and description [ccr]"It's just a normal-looking set of keys.". [D0]"There are some keys on the ground here."
 Understand "key/keyring/bunch" as the set of keys.
 Instead of unlocking the keys with, say [M55]"You can't unlock the keys."
-
 Does the player mean locking or unlocking something with the keys: it is likely.
 
 [O19]The tasty food is an edible thing in Inside_Building with indefinite article "some" and description [ccr]"Sure looks yummy!". [D0]"There is food here."
@@ -1142,7 +1141,7 @@ Instead of pouring bottle on:
 	if the noun contains something (called the contents), try pouring the contents on the second noun;
 	otherwise say [ccr]"The bottle is empty."
 Instead of drinking the bottle when the bottle encloses the bottled water: try drinking the bottled water.
-Accessibility when the bottle is enclosed by the location:
+Accessibility when the bottle is enclosed by the location (this is the convert bottle contents to bottle rule):
 	unless something is enclosed by the bottle:
 		if the noun is the bottled water or the noun is the bottled oil, now the noun is the bottle;
 		rule succeeds.
@@ -2162,7 +2161,11 @@ Instead of inserting something into the ming vase, try filling the ming vase.
 Instead of filling the ming vase:
 	unless the player encloses the ming vase, say [M29]"You aren't carrying it.";
 	otherwise say [M144]"There is nothing here with which to fill the vase."
-Instead of filling the ming vase when the stream is in the location: try inserting the ming vase into the stream.
+Instead of filling the ming vase when the stream is in the location, try inserting the ming vase into the stream.
+Instead of inserting the ming vase into the stream:
+	now the ming vase is nowhere;
+	move shards to location;
+	say [M145]"The sudden change in temperature has delicately shattered the vase."
 
 [ccr]Some worthless shards of pottery are a thing with description "They look to be the remains of what was once a beautiful vase. I guess some oaf must have dropped it.". [O58D2]"The floor is littered with worthless shards of pottery."
 Understand "remains/vase" as the shards.
