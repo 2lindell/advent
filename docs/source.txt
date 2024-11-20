@@ -268,6 +268,7 @@ Section - Examining
 
 Understand the command "touch" as "examine".
 Understand "[any referable backdrop]" as examining.
+The examine devices rule does nothing.
 
 Section - Taking/Dropping
 
@@ -369,9 +370,9 @@ Rule for supplying a missing noun while switching off:
 
 Section - Stating
 
-[I invented this action to allow for the player to type just a noun and then be asked for a verb which was a functionality of the original parser. This doesn't always work to keep the parser focused on this noun and it uses an extra turn so it's not the best solution.]
+[I invented this action to allow for the player to type just a noun and then be asked for a verb which was a functionality of the original parser. It doesn't always cause the parser to choose the correct noun for the next command so it's not the best solution. I also modified it so the parser will only pick it up if the object has been seen by the player before.]
 Stated item is an object that varies.
-Stating is an action applying to one visible thing. Understand "[any seen thing]" as stating.
+Stating is an action out of world applying to one visible thing. Understand "[any seen thing]" as stating.
 Check stating:
 	If the noun is enclosed by the location:
 		now the stated item is the noun;
@@ -379,7 +380,7 @@ Check stating:
 	otherwise:
 		say [MT]"I see no [noun] here."
 Does the player mean doing something to the stated item: it is very likely.
-Every turn when doing something other than stating: now the stated item is nothing.
+Every turn when doing something other than stating, now the stated item is nothing.
 
 Section - Giving
 
@@ -497,7 +498,8 @@ Chapter 4 - Phrases
 To move the/-- player to (someplace - object) as going:
 	now the prior location of the player is the location;
 	move the player to someplace, without printing a room description;
-	produce a room description with going spacing conventions.
+	produce a room description with going spacing conventions;
+	rule succeeds. [This is here to tell Inform that the player succeesfully carried out his action, beacuse usually this is called from instead rules which default in failure of the action.]
 	
 To prevent undo:
 	now undo allowed is false.
@@ -742,7 +744,7 @@ To provide (current hint - a hint):
 	if the player consents:
 		say [MT]"I am prepared to give you a hint, but it will cost you [points to deduct of current hint] points.[line break]";
 		say [M175]"Do you want the hint?";
-		say ">";
+		say "[line break]>";
 		if player consents:
 			say hint text of current hint;
 			decrease the score by points to deduct of current hint;
@@ -850,7 +852,7 @@ Every turn during Dwarves Active (this is the dwarves activity rule):
 			otherwise:
 				let kk be "[killers of Dwarves active in words]" in title case;
 				say [M7M]"[kk] of them get[if killers of Dwarves Active is one]s[end if] you!";
-		[if the killers of Dwarves Active is at least one, end the story;]
+		if the killers of Dwarves Active is at least one, end the story;
 		now attackers of Dwarves Active is zero;
 		now killers of Dwarves Active is zero.
 
@@ -865,13 +867,13 @@ Every turn during Pirate Active (this is the pirate activity rule):
 			now all stealable treasures enclosed by the location are in Dead_End_13;
 			return the pirate to his lair;
 			say [M128]"Out from the shadows behind you pounces a bearded pirate!  'Har, har,' he chortles.  'I'll just take all this booty and hide it away with me chest deep in the maze!'  He snatches your treasure and vanishes into the gloom.";
-			rule succeeds;
+			make no decision;
 		otherwise if a treasure is not enclosed by the location:
 			now the pirate is wandering;
 		if exactly one treasure is unfound and the pirate encloses the chest and the player encloses the lit lantern:
 			return the pirate to his lair;
 			say [M186]"There are faint rustling noises from the darkness behind you.  As you turn toward them, the beam of your lamp falls across a bearded pirate.  He is carrying a large chest.  'Shiver me timbers!' he cries, 'I've been spotted!  I'd best hie meself off to the maze to hide me chest!'  With that, he vanishes into the gloom.";
-			rule succeeds;
+			make no decision;
 		if the prior location of the pirate is not the location of the pirate and a random chance of 1 in 5 succeeds, say [M127]"There are faint rustling noises from the darkness behind you."
 
 To return the pirate to his lair:
@@ -936,9 +938,8 @@ When Cave Closing ends:
 	move velvet pillow to At_Sw_End;
 	now all things in End Game Area are handled;
 	say [M132]"The sepulchral voice intones, 'The cave is now closed.'  As the echoes fade, there is a blinding flash of light (and a small puff of orange smoke). . . .[line break]As your eyes refocus, you look around and find...";
-	move player to At_Ne_End as going;
 	prevent undo;
-	now the prior location of the player is nothing.
+	move player to At_Ne_End as going.
 	
 Section - Reincarnation
 
@@ -996,7 +997,9 @@ Understand "brick/building/small/wellhouse" as the well house.
 
 [ccr]The stream is a backdrop. It is in At_End_of_Road, In_A_Valley, At_Slit_In_Streambed, In_Pit, In_Cavern_With_Waterfall, At_Reservoir, and Inside_Building.
 Understand "water/brook/river/lake/small/tumbling/splashing/babbling/rushing/reservoir" as the stream.
-Instead of drinking the stream, say [M73]"You have taken a drink from the stream.  The water tastes strongly of minerals, but is not unpleasant.  It is extremely cold."
+Instead of drinking the stream:
+	say [M73]"You have taken a drink from the stream.  The water tastes strongly of minerals, but is not unpleasant.  It is extremely cold.";
+	rule succeeds.
 Instead of taking the stream:
 	unless the player encloses the bottle, say [M104]"You have nothing in which to carry it.";
 	otherwise try filling the bottle.
@@ -1005,7 +1008,8 @@ Instead of inserting the stream into something, say [M104]"You have nothing in w
 Instead of inserting the bottle into the stream, try filling the bottle.
 Instead of inserting something into the stream:
 	now the noun is nowhere;
-	say [I6]"[The noun] washes away with the stream."
+	say [I6]"[The noun] washes away with the stream.";
+	rule succeeds.
 Instead of entering the stream, say [M70]"Your feet are now wet."
 Before filling something when the stream is in the location, say "(from the stream)[command clarification break]".
 Instead of examining the stream when the location is Inside_Building, try examining the spring.
@@ -1068,9 +1072,10 @@ Does the player mean locking or unlocking something with the keys: it is likely.
 Understand "ration/rations/tripe/yummy/delicious/scrumptious" as the tasty food.
 After eating the tasty food, say [M72]"Thank you, that was delicious!"
 
-[O2]A brass lantern is a device in Inside_Building. [D0+1]"There is a [if switched off]shiny brass lamp [otherwise]lamp shining [end if]nearby."
+[O2]A brass lantern is a device in Inside_Building with description [ccr]"It is a shiny brass lamp[if switched off].  It is not currently lit.[otherwise if power remaining of lantern is less than 30], glowing dimly.[otherwise], glowing brightly.". [D0+1]"There is a [if switched off]shiny brass lamp [otherwise]lamp shining [end if]nearby."
 Understand "lamp/headlamp/headlight/light/shiny" as the brass lantern.
-Every turn when the lantern is switched on:
+The brass lantern has a number called power remaining. The power remaining is 330.
+Every turn when the lantern is switched on (this is the lamp power rule):
 	decrement power remaining of the lantern;
 	if power remaining of the lantern is 0:
 		now the lantern is switched off;
@@ -1091,7 +1096,6 @@ Every turn when the lantern is switched on:
 Instead of doing something in an aboveground room when the power remaining of the lantern is 0:
 		say [M185]"There's not much point in wandering around out here, and you can't explore the cave without a lamp.   So let's just call it a day.";
 		end the story finally.
-Instead of examining the lantern, say [ccr]"It is a shiny brass lamp[if switched off].  It is not currently lit.[otherwise if power remaining of lantern is less than 30], glowing dimly.[otherwise], glowing brightly."
 Instead of burning the lantern, try switching on the noun.
 Instead of rubbing the lantern, say [M75]"Rubbing the electric lamp is not particularly rewarding.  Anyway, nothing exciting happens."
 Instead of switching on the lantern when the power remaining of the lantern is at most 0, say [M184]"Your lamp has run out of power."
@@ -1109,7 +1113,6 @@ To replace batteries:
 	now fresh batteries are used;
 	move worn-out batteries to location;
 	now power remaining of the lantern is 2500.
-The brass lantern has a number called power remaining. The power remaining is 330.
 
 [O20]A small bottle is a container in Inside_Building.
 Understand "jar/flask" as the bottle.
@@ -1128,9 +1131,11 @@ Instead of filling the bottle:
 	otherwise if the stream is in location:
 		move bottled water to bottle;
 		say [M107]"Your bottle is now full of water.";
+		rule succeeds;
 	otherwise if the pool of oil is in location:
 		move bottled oil to bottle;
 		say [M108]"Your bottle is now full of oil.";
+		rule succeeds;
 	otherwise:
 		say [M106]"There is nothing here with which to fill the bottle."
 Instead of emptying the bottle:
@@ -1138,7 +1143,8 @@ Instead of emptying the bottle:
 		say [ccr]"The bottle is already empty!";
 	otherwise:
 		now the first thing held by the noun is nowhere;
-		say [M77]"Your bottle is empty and the ground is wet."
+		say [M77]"Your bottle is empty and the ground is wet.";
+		rule succeeds.
 Instead of pouring bottle on:
 	if the noun contains something (called the contents), try pouring the contents on the second noun;
 	otherwise say [ccr]"The bottle is empty."
@@ -1239,7 +1245,6 @@ Instead of closing the grate:
 		try locking the grate with the keys;
 	otherwise:
 		say [M31]"You have no keys!"
-
 Does the player mean unlocking or locking the steel grate with something: it is very likely.
 
 Chapter - Facilis descensus Averno
@@ -1263,9 +1268,7 @@ Understand "surface" as east when the location is In_Cobble_Crawl. Understand "d
 Instead of going inside in In_Cobble_Crawl, try going west.
 In_Cobble_Crawl travels to At_Top_Of_Small_Pit, In_Debris_Room, and Outside_Grate.
 
-Instead of traveling to Outside_Grate when the location is In_Cobble_Crawl or the location is In_Debris_Room or the location is In_Awkward_Sloping_E_W_Canyon or the location is In_Bird_Chamber or the location is At_Top_Of_Small_Pit:
-	if the steel grate is locked, move player to Below_The_Grate as going;
-	otherwise continue the action.
+Instead of traveling to Outside_Grate when (the location is In_Cobble_Crawl or the location is In_Debris_Room or the location is In_Awkward_Sloping_E_W_Canyon or the location is In_Bird_Chamber or the location is At_Top_Of_Small_Pit) and the steel grate is locked, move player to Below_The_Grate as going.
 
 [O4]The wicker cage is a container in In_Cobble_Crawl with description [ccr]"It's a small wicker cage."
 Rule for writing a paragraph about the wicker cage:
@@ -1287,7 +1290,7 @@ Understand "crawl/cobble/passage/tunnel/low" as east when the location is In_Deb
 Instead of going inside in In_Debris_Room, try going west.
 In_Debris_Room travels to Outside_Grate, Below_The_Grate, and At_Top_Of_Small_Pit.
 Instead of saying xyzzy in In_Debris_Room, move player to Inside_Building as going.
-
+	
 [ccr]Some debris is scenery in In_Debris_Room. "Yuck."
 Understand "stuff/mud" as the debris.
 
@@ -1306,7 +1309,8 @@ Instead of waving the black rod:
 			now crystal bridge is described;
 			say initial appearance of crystal bridge;
 	otherwise:
-		say [M42]"Nothing happens."
+		say [M42]"Nothing happens.";
+	rule succeeds.
 
 Section - 
 
@@ -1345,7 +1349,8 @@ Instead of taking the little bird:
 		say [M27]"You can catch the bird, but you cannot carry it.";
 	otherwise:
 		now the noun is in the wicker cage;
-		say [I6]"You catch the bird in the wicker cage."
+		say [I6]"You catch the bird in the wicker cage.";
+		rule succeeds.
 Instead of dropping the little bird:
 	unless the player encloses the noun, say [M29]"You aren't carrying it!";
 	otherwise free the bird.
@@ -1359,7 +1364,8 @@ Instead of attacking the little bird:
 	otherwise:
 		now the noun is nowhere;
 		if the snake is on-stage, now the jewelry is elusive;
-		say [M45]"The little bird is now dead.  Its body disappears."
+		say [M45]"The little bird is now dead.  Its body disappears.";
+		rule succeeds.
 To free the bird:
 	now the noun is in location;
 	if the snake is in location:
@@ -1370,7 +1376,8 @@ To free the bird:
 		say [M154]"The little bird attacks the green dragon, and in an astounding flurry gets burnt to a cinder.  The ashes blow away.";
 		if the snake is on-stage, now the jewelry is elusive;
 	otherwise:
-		say [I6]"The little bird flies free."
+		say [I6]"The little bird flies free.";
+	rule succeeds.
 The carrying requirements rule does nothing when doing something to the little bird and the little bird is in the wicker cage.
 The can't put what's not held rule does nothing when putting the little bird on something and the little bird is in the wicker cage.
 
@@ -1412,10 +1419,7 @@ In_Hall_Of_Mists travels to At_Y2. After traveling to At_Y2 when the prior locat
 [ccr]A wide stone staircase is scenery in In_Hall_Of_Mists. "The staircase leads down."
 Understand "stair/stairs" as the stone staircase.
 
-[ccr]A dome is climbable scenery in In_Hall_Of_Mists.
-Instead of examining the dome:
-	if the gold nugget is enclosed by the player, say "I'm not sure you'll be able to get up it with what you're carrying.";
-	otherwise say "It looks like you might be able to climb up it."
+[ccr]A dome is climbable scenery in In_Hall_Of_Mists. "[if the gold nugget is enclosed by the player]I'm not sure you'll be able to get up it with what you're carrying.[otherwise]It looks like you might be able to climb up it."
 Instead of climbing the dome, try going up.
 
 Section - 
@@ -1522,10 +1526,11 @@ Instead of throwing something at the snake:
 	if the noun is the axe, try attacking the snake;
 	otherwise try giving the noun to the snake.
 Instead of giving something to the snake:
-	if  the noun is the little bird:
+	if the noun is the little bird:
 		now the little bird is nowhere;
 		say [M101]"The snake has now devoured your bird.";
 		now the jewelry is elusive;
+		rule succeeds;
 	otherwise:
 		say [M102]"There's nothing here it wants to eat (except perhaps you)."
 Instead of attacking the snake, say [M46]"Attacking the snake both doesn't work and is very dangerous."
@@ -1594,7 +1599,8 @@ Understand "window/on/pit/east/e" as At_Window_On_Pit_1.
 At_Window_On_Pit_1 travels to At_Y2.
 [L20]Instead of jumping in At_Window_On_Pit_1:
 	say "You are at the bottom of the pit with a broken neck.";
-	end the story.
+	end the story;
+	rule succeeds.
 Instead of going nowhere from At_Window_On_Pit_1, say [I6]"The only passage is back east to 'Y2'."
 
 [ccr]A window is a backdrop. "It looks like a regular window."
@@ -1780,10 +1786,13 @@ At_West_End_Of_Twopit_Room travels to In_Slab_Room.
 
 [O25]The beanstalk is a not scenery climbable backdrop with printed name "[if height of plant is tall]top of 12-foot-tall beanstalk[otherwise]huge beanstalk".
 Understand "plant/stalk/bean/giant/tiny/little/murmuring/twelve/foot/tall/bellowing" as the beanstalk.
-Rule for writing a paragraph about the beanstalk (this is the describe beanstalk rule):
-	if height of plant is tall, say [D1]"The top of a 12-foot-tall beanstalk is poking out of the west pit." (A);
-	otherwise say [D2]"There is a huge beanstalk growing out of the west pit up to the hole." (B).
-Instead of examining the beanstalk, follow the describe beanstalk rule.
+To describe the beanstalk:
+	if height of plant is tall, say [D1]"The top of a 12-foot-tall beanstalk is poking out of the west pit.";
+	otherwise say [D2]"There is a huge beanstalk growing out of the west pit up to the hole."
+Rule for writing a paragraph about the beanstalk: describe the beanstalk.
+Instead of examining the beanstalk:
+	describe the beanstalk;
+	rule succeeds.
 Instead of climbing the beanstalk:
 	if height of plant is huge, try climbing the plant;
 	otherwise continue the action.
@@ -1819,7 +1828,8 @@ Rule for writing a paragraph about the plant: describe the plant.
 Instead of taking the plant when the height of the plant is tiny, say [M115]"The plant has exceptionally deep roots and cannot be pulled free."
 Instead of pouring the bottled oil on the plant:
 	now the bottled oil is nowhere;
-	say [M112]"The plant indignantly shakes the oil off its leaves and asks, 'Water?'".
+	say [M112]"The plant indignantly shakes the oil off its leaves and asks, 'Water?'";
+	rule succeeds.
 Instead of pouring the bottled water on the plant:
 	now the bottled water is nowhere;
 	if height of the second noun is:
@@ -1835,8 +1845,11 @@ Instead of pouring the bottled water on the plant:
 			now the beanstalk is nowhere;
 			now height of the second noun is tiny;
 	say line break;
-	describe the plant.
-Instead of examining the plant, describe the plant.
+	describe the plant;
+	rule succeeds.
+Instead of examining the plant:
+	describe the plant;
+	rule succeeds.
 Rule for supplying a missing second noun while pouring and the plant is in the location:
 	now the second noun is the plant;
 	say "(on [the second noun])[command clarification break]".
@@ -1932,10 +1945,8 @@ Understand "atop/stalactite" as Atop_Stalactite.
 Instead of going down in Atop_Stalactite:
 	if a random chance of 2 in 5 succeeds:
 		move the player to Alike_Maze_6 as going;
-		stop the action;
 	if a random chance of 1 in 2 succeeds:
 		move the player to Alike_Maze_9 as going;
-		stop the action;
 	move the player to Alike_Maze_4 as going.
 Instead of jumping or climbing in Atop_Stalactite, try going down.
 
@@ -1960,6 +1971,7 @@ Instead of going in In_Secret_Canyon when the dragon is on-stage:
 
 [O31]A dragon is an animal in In_Secret_Canyon with description [ccr]"I wouldn't mess with it if I were you.". [D0]"A huge green fierce dragon bars the way![no line break]".
 Understand "monster/beast/lizard/huge/green/fierce/scaly" as the dragon.
+The dragon can be being attacked.
 Instead of attacking the dragon:
 	now the noun is being attacked;
 	say [M49]"With what?  Your bare hands?"
@@ -1967,18 +1979,20 @@ Instead of giving something to the dragon, say [M102]"There's nothing here it wa
 Instead of throwing something at the dragon, say [ccr]"You'd probably be better off using your bare hands than that thing!"
 Instead of throwing axe at the dragon:
 	move axe to location;
-	say [M152]"The axe bounces harmlessly off the dragon's thick scales."
-The dragon can be being attacked.
+	say [M152]"The axe bounces harmlessly off the dragon's thick scales.";
+	rule succeeds.
 Instead of saying yes in In_Secret_Canyon when dragon is being attacked:
 		now the dragon is nowhere;
 		move the dragon's carcass to location;
 		now the dragon is not being attacked;
 		now the persian rug is portable;
 		say [D1]"Congratulations!  You have just vanquished a dragon with your bare hands!  (Unbelievable, isn't it?)";
-		increase the score by 2.
+		increase the score by 2;
+		rule succeeds.
 Instead of saying no in In_Secret_Canyon when dragon is being attacked:
 		now the dragon is not being attacked;
-		say [I6]"I should think not."
+		say [I6]"I should think not.";
+		rule succeeds.
 Instead of doing something when dragon is being attacked:
 		now the dragon is not being attacked;
 		continue the action.
@@ -2037,7 +2051,8 @@ Down and east is In_West_Pit. West is In_Giant_Room. North from In_Narrow_Corrid
 In_Narrow_Corridor travels to In_Giant_Room.
 [L20]Instead of jumping in In_Narrow_Corridor:
 	say "You are at the bottom of the pit with a broken neck.";
-	end the story.
+	end the story;
+	rule succeeds.
 
 [ccr]Some leaves are climbable scenery in In_Narrow_Corridor. "The leaves appear to be attached to the beanstalk you climbed to get here."
 Understand "leaf/plant/tree/stalk/beanstalk/profusion" as the leaves.
@@ -2089,6 +2104,7 @@ Instead of pouring oil on the rusty door:
 		now the bottled oil is nowhere;
 		now the rusty door is unlocked;
 		say [M114]"The oil has freed up the hinges so that the door will now move, although it requires some effort.";
+		rule succeeds;
 	otherwise:
 		say [ccr]"You have nothing to oil it with."
 Instead of pouring water on the rusty door:
@@ -2097,6 +2113,7 @@ Instead of pouring water on the rusty door:
 		now the noun is locked;
 		now the noun is closed;
 		say [M113]"The hinges are quite thoroughly rusted now and won't budge.";
+		rule succeeds;
 	otherwise:
 		say "You have nothing to water it with."
 Rule for supplying a missing second noun while pouring and the rusty door is in the location:
@@ -2158,7 +2175,8 @@ After dropping the ming vase:
 Instead of attacking or breaking the ming vase:
 	now the ming vase is nowhere;
 	move shards to location;
-	say [M198]"You have taken the vase and hurled it delicately to the ground."
+	say [M198]"You have taken the vase and hurled it delicately to the ground.";
+	rule succeeds.
 Instead of inserting something into the ming vase, try filling the ming vase.
 Instead of filling the ming vase:
 	unless the player encloses the ming vase, say [M29]"You aren't carrying it.";
@@ -2167,7 +2185,8 @@ Instead of filling the ming vase when the stream is in the location, try inserti
 Instead of inserting the ming vase into the stream:
 	now the ming vase is nowhere;
 	move shards to location;
-	say [M145]"The sudden change in temperature has delicately shattered the vase."
+	say [M145]"The sudden change in temperature has delicately shattered the vase.";
+	rule succeeds.
 
 [ccr]Some worthless shards of pottery are a thing with description "They look to be the remains of what was once a beautiful vase. I guess some oaf must have dropped it.". [O58D2]"The floor is littered with worthless shards of pottery."
 Understand "remains/vase" as the shards.
@@ -2258,7 +2277,8 @@ Instead of unlocking the clam with the trident:
 		otherwise:
 			now the noun is discovered;
 			move pearl to In_A_Cul_De_Sac;
-			say [M124]"A glistening pearl falls out of the clam and rolls away.  Goodness, this must really be an oyster.  (I never was very good at identifying bivalves.)  Whatever it is, it has now snapped shut again."
+			say [M124]"A glistening pearl falls out of the clam and rolls away.  Goodness, this must really be an oyster.  (I never was very good at identifying bivalves.)  Whatever it is, it has now snapped shut again.";
+			rule succeeds.
 Instead of attacking the giant clam, say [M150]"The shell is very strong and is impervious to attack."
 After taking the giant clam when the location is in End Game Area, say [O15D1]"Interesting.  There seems to be something written on the underside of the oyster."
 Instead of reading or examining the handled giant clam in End Game Area:
@@ -2271,7 +2291,8 @@ Instead of reading or examining the handled giant clam in End Game Area:
 			decrease the score by 10;
 			prevent undo;
 	otherwise:
-		say [M194]"It says the same thing it did before."
+		say [M194]"It says the same thing it did before.";
+	rule succeeds.
 
 [O61]A glistening pearl is a treasure with description [ccr]"It's incredibly large!" and deposit points 14. [D0]"Off to one side lies a glistening pearl!"
 Understand "incredible/incredibly/large'" as the pearl.
@@ -2294,7 +2315,9 @@ Up is At_Complex_Junction. West is In_Bedquilt. East is At_Witts_End.
 
 [ccr]A sign is scenery in In_Anteroom with description "It's hanging way above your head."
 Understand "witt/company/construction" as the sign.
-Instead of reading the sign, say "It says, 'Cave under construction beyond this point.  Proceed at own risk.  [bracket]Witt Construction Company[close bracket]'".
+Instead of reading the sign:
+	say [ccr]"It says, 'Cave under construction beyond this point.  Proceed at own risk.  [bracket]Witt Construction Company[close bracket]'";
+	rule succeeds.
 
 [O16]Some recent issues of Spelunker Today are a thing in In_Anteroom with printed name "recent issues of 'Spelunker Today'", indefinite article "a few", and description [M190]"I'm afraid the magazines are written in Dwarvish.". [D0]"There are a few recent issues of 'Spelunker Today' magazine here."
 Understand "magazines/magazine/issue" as the issues.
@@ -2334,7 +2357,8 @@ West is At_Junction_Of_Three. South from At_Window_On_Pit_2 is nowhere.
 Instead of going nowhere from At_Window_On_Pit_2, say [I6]"The only passage is back west to the junction."
 [L20]Instead of jumping in At_Window_On_Pit_2:
 	say "You are at the bottom of the pit with a broken neck.";
-	end the story.
+	end the story;
+	rule succeeds.
 
 Section - 
 
@@ -2393,6 +2417,7 @@ Instead of giving something to the troll:
 		move troll to rickety bridge;
 		now the troll is placated;
 		say [M159]"The troll catches your treasure and scurries away out of sight.";
+		rule succeeds;
 	otherwise if the noun is the tasty food:
 		say [M182]"Gluttony is not one of the troll's vices.  Avarice, however, is.";
 	otherwise:
@@ -2416,7 +2441,8 @@ Instead of jumping in a room that contains the rickety bridge:
 		say [M96]"I respectfully suggest you go across the bridge instead of jumping.";
 	otherwise:
 		say [L21]"You didn't make it.";
-		end the story.
+		end the story;
+		rule succeeds.
 
 [L123]In_Corridor is a forbidden room in Beyond Troll Area with printed name "In Corridor" and brief description "You're in corridor.". "You're in a long east/west corridor.  A faint rumbling noise can be heard in the distance."
 Understand "corridor" as In_Corridor.
@@ -2479,9 +2505,9 @@ In_Chamber_Of_Boulders travels to At_Fork_In_Path and At_Breath_Taking_View.
 Understand "boulder/rocks/stones" as the boulders.
 Instead of looking under, pushing, or pulling the warm boulders, say [I6]"You'd have to blast them aside."
 
-[O63]Some rare spices are a treasure in In_Chamber_Of_Boulders with deposit points 14. [D0]"There are rare spices here!"
+[O63]Some rare spices are a treasure in In_Chamber_Of_Boulders with description [ccr]"They smell wonderfully exotic!" and deposit points 14. [D0]"There are rare spices here!"
 Understand "spice/exotic" as the rare spices.
-Instead of smelling or examining the rare spices, say [ccr]"They smell wonderfully exotic!"
+Instead of smelling the rare spices, try examining the noun.
 
 Section - 
 
@@ -2535,23 +2561,26 @@ Instead of throwing the axe at the bear:
 	otherwise:
 		move axe to location;
 		now the axe is near the bear;
-		say [M164]"The axe misses and lands near the bear where you can't get at it."
+		say [M164]"The axe misses and lands near the bear where you can't get at it.";
+		rule succeeds.
 Instead of giving the tasty food to the bear:
 	now the axe is not near the bear;
 	now the tasty food is nowhere;
 	now the bear is friendly;
-	say [M168]"The bear eagerly wolfs down your food, after which he seems to calm down considerably and even becomes rather friendly."
+	say [M168]"The bear eagerly wolfs down your food, after which he seems to calm down considerably and even becomes rather friendly.";
+	rule succeeds.
 Instead of giving something to the bear:
 	if the bear is friendly, say [M174]"There is nothing here to eat.";
 	otherwise say [M102]"There's nothing here it wants to eat (except perhaps you)."
-Instead of asking the bear to try doing something, say "This is a Bear of very little brain."
-Instead of asking the bear about something, say "This is a Bear of very little brain."
-Instead of answering the bear that something, say "This is a Bear of very little brain."
+Instead of asking the bear to try doing something, say [I6]"This is a Bear of very little brain."
+Instead of asking the bear about something, say [I6]"This is a Bear of very little brain."
+Instead of answering the bear that something, say [I6]"This is a Bear of very little brain."
 Instead of taking the ferocious bear, say [M25]"You can't be serious!"
 Instead of taking the friendly chained bear, say [M169]"The bear is still chained to the wall."
 Instead of taking the friendly free bear:
 	now the bear is following you;
-	say [ccr]"Ok, the bear's now following you around."
+	say [ccr]"Ok, the bear's now following you around.";
+	rule succeeds.
 Instead of dropping the bear:
 	if the bear is wandering:
 		say [M29]"You aren't carrying it.";
@@ -2561,15 +2590,14 @@ Instead of dropping the bear:
 			now the troll is nowhere;
 			say [M163]"The bear lumbers toward the troll, who lets out a startled shriek and scurries away.  The bear soon gives up the pursuit and wanders back.";
 		otherwise:
-			say [ccr]"The bear wanders away from you."
+			say [ccr]"The bear wanders away from you.";
+		rule succeeds.
 After taking inventory when the bear is following you, say [M141]"You are being followed by a very large, tame bear."
 After going when the bear is following you:
 	move bear to location;
 	continue the action.
-Rule for choosing notable locale objects for In_Barren_Room (this is the put chain after bear rule):
-	if the chain is locked:
-		set the locale priority of the bear to 3;
-		set the locale priority of the chain to 4;
+Rule for choosing notable locale objects for In_Barren_Room when the chain is locked (this is the put chain after bear rule):
+	set the locale priority of the chain to 4;
 	continue the activity.
 
 [O64]A golden chain is a lockable locked treasure in In_Barren_Room with description [ccr]"The chain has thick links of solid gold!" and deposit points 14. The chain can be lockable. The chain can be locked or unlocked. The set of keys unlocks the chain.
@@ -2590,6 +2618,7 @@ Instead of locking the unlocked chain with the keys:
 		say [M172]"The chain is now locked.";
 		move the chain to the location;
 		now the chain is locked;
+		rule succeeds;
 	otherwise:
 		say [M173]"There is nothing here to which the chain can be locked."
 After unlocking the chain with something:
@@ -2743,7 +2772,8 @@ Instead of dropping the coins in Dead_End_14, try inserting the noun into the ve
 Instead of inserting the rare coins into the vending machine:
 	move fresh batteries to location;
 	now the rare coins are nowhere;
-	say [ccr]"Soon after you insert the coins in the coin slot, the vending machine makes a grinding sound, and a set of fresh batteries falls at your feet."
+	say [ccr]"Soon after you insert the coins in the coin slot, the vending machine makes a grinding sound, and a set of fresh batteries falls at your feet.";
+	rule succeeds.
 Instead of inserting something into the vending machine, say [ccr]"The machine seems to be designed to take coins."
 Instead of attacking or breaking the vending machine, say [ccr]"The machine is quite sturdy and survives your attack without getting so much as a scratch."
 Instead of looking under the vending machine, say [ccr]"You don't find anything under the machine."
@@ -2786,7 +2816,8 @@ Instead of throwing the axe at a dwarf:
 		now the second noun is nowhere;
 		say [M47][M149]"You killed a little dwarf[first time].  The body vanishes in a cloud of greasy black smoke[only].";
 	otherwise:
-		say [M48]"You attack a little dwarf, but he dodges out of the way."
+		say [M48]"You attack a little dwarf, but he dodges out of the way.";
+	rule succeeds.
 
 The dwarf's knife is an undescribed thing. Understand "knives" as the dwarf's knife. The knife can be tried.
 Instead of taking or examining the knife:
@@ -2829,7 +2860,8 @@ Instead of attacking the sleeping dwarves, wake the sleeping dwarves.
 
 To wake the sleeping dwarves:
 	say [M136]"The resulting ruckus has awakened the dwarves. There are now several threatening little dwarves in the room with you! Most of them throw knives at you! All of them get you!";
-	end the story finally.
+	end the story finally;
+	rule succeeds.
 
 Section - 
 
@@ -2842,19 +2874,22 @@ Understand "ordinary/steel/grating" as the repository grate.
 [O6]The mark rod is a thing in At_Sw_End with printed name "black rod" and description "It's a three foot black rod with a rusty mark on an end.". [D0]"A three foot black rod with a rusty mark on an end lies nearby."
 Understand "black/rusty/three/foot/iron/explosive/dynamite/blast" as the mark rod.
 
-Instead of finding something in End Game Area: say [M138]"I daresay whatever you want is around here somewhere."
+Instead of finding something in End Game Area, say [M138]"I daresay whatever you want is around here somewhere."
 
 Instead of blasting some object with in At_Sw_End when the mark rod is in At_Ne_End:
 	increase the score by 35;
 	say [M133]"There is a loud explosion, and a twenty-foot hole appears in the far wall, burying the dwarves in the rubble. You march through the hole and find yourself in the main office, where a cheering band of friendly elves carry the conquering adventurer off into the sunset.";
-	end the story finally.
+	end the story finally;
+	rule succeeds.
 Instead of blasting some object with in At_Ne_End when the mark rod is in At_Sw_End:
 	increase the score by 20;
 	say [M134]"There is a loud explosion, and a twenty-foot hole appears in the far wall, burying the snakes in the rubble. A river of molten lava pours in through the hole, destroying everything in its path, including you!";
-	end the story finally.
+	end the story finally;
+	rule succeeds.
 Instead of blasting some object with the mark rod:
 	say [M135]"There is a loud explosion, and you are suddenly splashed across the walls of the room.";
-	end the story finally.
+	end the story finally;
+	rule succeeds.
 
 Section -
 
