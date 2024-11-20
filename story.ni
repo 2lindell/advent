@@ -370,7 +370,7 @@ Rule for supplying a missing noun while switching off:
 
 Section - Stating
 
-[I invented this action to allow for the player to type just a noun and then be asked for a verb which was a functionality of the original parser. This doesn't always work to keep the parser focused on this noun and it uses an extra turn so it's not the best solution.]
+[I invented this action to allow for the player to type just a noun and then be asked for a verb which was a functionality of the original parser. It doesn't always cause the parser to choose the correct noun for the next command so it's not the best solution. I also modified it so the parser will only pick it up if the object has been seen by the player before.]
 Stated item is an object that varies.
 Stating is an action out of world applying to one visible thing. Understand "[any seen thing]" as stating.
 Check stating:
@@ -380,7 +380,7 @@ Check stating:
 	otherwise:
 		say [MT]"I see no [noun] here."
 Does the player mean doing something to the stated item: it is very likely.
-Every turn when doing something other than stating: now the stated item is nothing.
+Every turn when doing something other than stating, now the stated item is nothing.
 
 Section - Giving
 
