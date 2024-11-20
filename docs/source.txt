@@ -18,7 +18,7 @@ The story creation year is 1977.
 
 Use scoring.
 
-Release along with the "Quixe" interpreter, the source text, and cover art.
+Release along with an interpreter, the source text, and cover art.
 
 Section - Tables
 
@@ -66,7 +66,7 @@ Instead of going outside in a deadend room, move player to a random adjacent roo
 A person is either following you or wandering. A person is usually wandering.
 A person has a room called the prior location.
 Definition: a person is another if it is not the player.
-The carrying capacity of the player is 7.
+The player has a number called deaths. The carrying capacity of the player is 7.
 
 A thing can be seen or unseen. A thing can be climbable.
 
@@ -380,7 +380,7 @@ Check stating:
 	otherwise:
 		say [MT]"I see no [noun] here."
 Does the player mean doing something to the stated item: it is very likely.
-Every turn when doing something other than stating, now the stated item is nothing.
+Every turn when doing something other than stating (this is the reset stated item rule), now the stated item is nothing.
 
 Section - Giving
 
@@ -403,7 +403,6 @@ Check reading (this is the block reading rule): say [M195]"I'm afraid I don't un
 
 Section - Feefing
 
-Understand "fee/fie/foe/foo/fum" as "[feefie]".
 Feefing is an action applying to one visible thing. Understand "[feefie] [something]" as feefing.
 Check feefing (this is the wrong use of feefie rule): say [M147]"I don't know how." (A) instead.
 
@@ -414,6 +413,20 @@ Check briefing (This is the wrong use of brief rule): say [M155]"On what?" (A) i
 
 The standard report preferring sometimes abbreviated room descriptions rule is not listed in any rulebook.
 Report preferring sometimes abbreviated room descriptions (this is the advent report preferring sometimes abbreviated room descriptions rule): say [M156]"Okay, from now on I'll only describe a place in full the first time you come to it.  To get the full description, say 'LOOK'." (A).
+
+Section - Saying Yes/No
+
+Check saying yes (this is the pretend to not know the word yes rule):
+	now the latest parser error is the noun did not make sense in that context error;
+	carry out the printing a parser error activity;
+	stop the action.
+The pretend to not know the word yes rule is listed instead of the block saying yes rule in the check saying yes rulebook.
+
+Check saying no (this is the pretend to not know the word no rule):
+	now the latest parser error is the noun did not make sense in that context error;
+	carry out the printing a parser error activity;
+	stop the action.
+The pretend to not know the word no rule is listed instead of the block saying no rule in the check saying no rulebook.
 
 Section - Waking
 
@@ -492,6 +505,7 @@ Section - Tokens
 Understand "road/hill" as "[road]".
 Understand "building/house" as "[building]".
 Understand "sesame/opensesame/abra/abracadabra/shazam/hocus/pocus" as "[old magic]".
+Understand "fee/fie/foe/foo/fum" as "[feefie]".
 
 Chapter 4 - Phrases
 
@@ -562,7 +576,7 @@ Rule for deciding whether all includes something inside a container (this is the
 
 Section - Initial appearances
 
-Rule for writing a paragraph about a thing (called the specimen) (this is the also use initial appearance rule):
+Rule for writing a paragraph about a thing (called the specimen) (this is the always use initial appearance rule):
 	If initial appearance of the specimen is not empty:
 		say the initial appearance of the specimen;
 		say line break.
@@ -679,11 +693,11 @@ Section - Parser
 
 Rule for printing a parser error when the latest parser error is the noun did not make sense in that context error (this is the advent confused parser rule):
 	if a random chance of 1 in 5 succeeds:
-		say [M61]"What?" (A);
+		say [M61]"What?";
 	otherwise if a random chance of 1 in 5 succeeds:
-		say [M13]"I don't understand that!" (B);
+		say [M13]"I don't understand that!";
 	otherwise:
-		say [M60]"I don't know that word." (C).
+		say [M60]"I don't know that word."
 
 Rule for printing a parser error when the latest parser error is the noun did not make sense in that context error and the player's command matches "crawl" (this is the vague crawling rule): say [M80]"Which way?" (A).
 
@@ -943,30 +957,29 @@ When Cave Closing ends:
 	
 Section - Reincarnation
 
-Deaths is a number that varies.
-When play ends when the story has not ended finally and deaths is less than 3 (this is the reincarnate player rule):
+When play ends when the story has not ended finally and deaths of the player is less than 3 (this is the reincarnate player rule):
 	decrease the score by 10;
 	follow the notify score changes rule;
 	say line break;
 	if Cave Closing is happening:
-		say [M131]"It looks as though you're dead. Well, seeing as how it's so close to closing time anyway, I think we'll just call it a day.";
+		say [M131]"It looks as though you're dead.  Well, seeing as how it's so close to closing time anyway, I think we'll just call it a day.";
 		make no decision;
-	if deaths is:
-		-- 0: say [M81]"Oh dear, you seem to have gotten yourself killed. I might be able to help you out, but I've never really done this before. Do you want me to try to reincarnate you?";
-		-- 1: say [M83]"You clumsy oaf, you've done it again! I don't know how long I can keep this up. Do you want me to try reincarnating you again?";
-		-- 2: say [M85]"Now you've really done it! I'm out of orange smoke! You don't expect me to do a decent reincarnation without any orange smoke, do you?";
+	if deaths of the player is:
+		-- 0: say [M81]"Oh dear, you seem to have gotten yourself killed.  I might be able to help you out, but I've never really done this before.  Do you want me to try to reincarnate you?";
+		-- 1: say [M83]"You clumsy oaf, you've done it again!  I don't know how long I can keep this up.  Do you want me to try reincarnating you again?";
+		-- 2: say [M85]"Now you've really done it!  I'm out of orange smoke!  You don't expect me to do a decent reincarnation without any orange smoke, do you?";
 	say line break;
 	say ">";
 	unless player consents, make no decision;
-	if deaths is:
+	if deaths of the player is:
 		-- 0:
-			say [M82]"All right. But don't blame me if something goes wr......[paragraph break][paragraph break]--- POOF!! ---[paragraph break] You are engulfed in a cloud of orange smoke. Coughing and gasping, you emerge from the smoke and find that you're....";
+			say [M82]"All right.  But don't blame me if something goes wr......[line break]          --- POOF!! ---[line break]You are engulfed in a cloud of orange smoke.  Coughing and gasping, you emerge from the smoke and find....";
 		-- 1:
-			say [M84]"Okay, now where did I put my orange smoke?.... >POOF!<[paragraph break]Everything disappears in a dense cloud of orange smoke.";
+			say [M84]"Okay, now where did I put my orange smoke?....  >POOF!<[line break]Everything disappears in a dense cloud of orange smoke.";
 		-- 2:
-			say [M86]"Okay, if you're so smart, do it yourself! I'm leaving!";
+			say [M86]"Okay, if you're so smart, do it yourself!  I'm leaving!";
 			make no decision;
-	increment deaths;
+	increment deaths of the player;
 	if the player encloses the brass lantern:
 		move the brass lantern to At_End_Of_Road;
 		now the brass lantern is switched off;
@@ -992,7 +1005,7 @@ Understand "[road]" as west when the location is At_End_Of_Road. Understand "[bu
 At_End_Of_Road travels to Outside_Grate.
 Rule for supplying a missing noun while entering and the location is At_End_of_Road: now the noun is east.
 
-[ccr]The well house is a backdrop. "It's a small brick building. It seems to be a well house." It is in At_End_of_Road, At_Hill_in_Road, and Inside_Building.
+[ccr]The well house is a backdrop. "It's a small brick building.  It seems to be a well house." It is in At_End_of_Road, At_Hill_in_Road, and Inside_Building.
 Understand "brick/building/small/wellhouse" as the well house.
 
 [ccr]The stream is a backdrop. It is in At_End_of_Road, In_A_Valley, At_Slit_In_Streambed, In_Pit, In_Cavern_With_Waterfall, At_Reservoir, and Inside_Building.
@@ -1044,10 +1057,10 @@ Understand "inside/building/well/house/wellhouse" as Inside_Building.
 Understand "outdoors" as outside when the location is Inside_Building.
 Rule for supplying a missing noun while entering and the location is Inside_Building: now the noun is west.
 [L79]Understand "stream" or "downstream" as a mistake ("The stream flows out through a pair of 1 foot diameter sewer pipes.  It would be advisable to use the exit.") when the location is Inside_Building.
-Instead of saying xyzzy in Inside_Building:
+After saying xyzzy in Inside_Building:
 	unless In_Debris_Room is visited, continue the action; [This is a change from the original made in the I6 version. I kept it because it makes sense that the player should not be able to use a magic word before he discovers it.]
 	move the player to In_Debris_Room as going.
-Instead of saying plugh in Inside_Building:
+After saying plugh in Inside_Building:
 	unless At_Y2 is visited, continue the action;
 	move the player to At_Y2 as going.
 After taking a treasure in Inside_Building:
@@ -1158,10 +1171,12 @@ Accessibility when the bottle is enclosed by the location (this is the convert b
 Understand "h2o" as the bottled water.
 Instead of drinking the bottled water:
 	now the noun is nowhere;
-	say [M74]"The bottle of water is now empty."
+	say [M74]"The bottle of water is now empty.";
+	rule succeeds.
 Instead of pouring the bottled water on:
 	now the noun is nowhere;
-	say [M77]"Your bottle is empty and the ground is wet."
+	say [M77]"Your bottle is empty and the ground is wet.";
+	rule succeeds.
 Does the player mean drinking the bottled water: it is very likely.
 Does the player mean pouring the bottled water on: it is very likely.
 
@@ -1169,7 +1184,8 @@ Does the player mean pouring the bottled water on: it is very likely.
 Understand "lubricant/grease" as the bottled oil.
 Instead of pouring the bottled oil on:
 	now the noun is nowhere;
-	say [M77]"Your bottle is empty and the ground is wet."
+	say [M77]"Your bottle is empty and the ground is wet.";
+	rule succeeds.
 Does the player mean pouring the bottled oil on: it is very likely.
 
 Section - 
@@ -1289,7 +1305,7 @@ Up and west is In_Awkward_Sloping_E_W_Canyon.
 Understand "crawl/cobble/passage/tunnel/low" as east when the location is In_Debris_Room. Understand "canyon" as west when the location is In_Debris_Room.
 Instead of going inside in In_Debris_Room, try going west.
 In_Debris_Room travels to Outside_Grate, Below_The_Grate, and At_Top_Of_Small_Pit.
-Instead of saying xyzzy in In_Debris_Room, move player to Inside_Building as going.
+After saying xyzzy in In_Debris_Room, move player to Inside_Building as going.
 	
 [ccr]Some debris is scenery in In_Debris_Room. "Yuck."
 Understand "stuff/mud" as the debris.
@@ -1298,19 +1314,16 @@ Understand "stuff/mud" as the debris.
 
 [O5]A black rod is a thing in In_Debris_Room with printed name "black rod" and description [ccr]"It's a three foot black rod with a rusty star on an end.". [D0]"A three foot black rod with a rusty star on an end lies nearby."
 Understand "star/rusty/three/foot/iron" as the black rod.
-Instead of waving the black rod:
-	if the location contains the fissure:
-		if Cave Closing is happening:
-			say [M76]"Peculiar. Nothing happens.";
-		otherwise if the crystal bridge is described:
-			now crystal bridge is undescribed;
-			say [O12 D2]"The crystal bridge has vanished!";
-		otherwise:
-			now crystal bridge is described;
-			say initial appearance of crystal bridge;
+After waving the black rod when the location contains the fissure:
+	if Cave Closing is happening:
+		say [M76]"Peculiar. Nothing happens.";
+	otherwise if the crystal bridge is described:
+		now crystal bridge is undescribed;
+		say [O12 D2]"The crystal bridge has vanished!";
 	otherwise:
-		say [M42]"Nothing happens.";
-	rule succeeds.
+		now crystal bridge is described;
+		say initial appearance of crystal bridge;
+		say line break.
 
 Section - 
 
@@ -1340,8 +1353,9 @@ Instead of inserting the little bird into the wicker cage:
 		say "The little bird is already in the cage!";
 	otherwise:
 		unless the player encloses the wicker cage, carry out the implicitly taking activity with the second noun;
-		try taking the noun.
-Instead of removing the little bird from the wicker cage, free the bird.
+		try taking the noun;
+		if the cage encloses the noun, rule succeeds.
+Instead of removing the little bird from the wicker cage, abide by the free the bird rule.
 Instead of taking the little bird:
 	if the noun is in the wicker cage:
 		try taking the wicker cage;
@@ -1353,8 +1367,8 @@ Instead of taking the little bird:
 		rule succeeds.
 Instead of dropping the little bird:
 	unless the player encloses the noun, say [M29]"You aren't carrying it!";
-	otherwise free the bird.
-Instead of giving something to the little bird, say [M100]"It's not hungry (it's merely pinin' for the fjords).  Besides, you have no bird seed."
+	otherwise abide by the free the bird rule.
+Instead of giving something to the little bird, say [M100]"It's not hungry (it's merely pinin['] for the fjords).  Besides, you have no bird seed."
 Instead of asking the little bird to try doing something, say [I6]"Cheep! Chirp!"
 Instead of asking the little bird about something, say [I6]"Cheep! Chirp!"
 Instead of answering the little bird that something, say [I6]"Cheep! Chirp!"
@@ -1366,13 +1380,13 @@ Instead of attacking the little bird:
 		if the snake is on-stage, now the jewelry is elusive;
 		say [M45]"The little bird is now dead.  Its body disappears.";
 		rule succeeds.
-To free the bird:
-	now the noun is in location;
+This is the free the bird rule:
+	now the bird is in location;
 	if the snake is in location:
 		now the snake is nowhere;
 		say [M30]"The little bird attacks the green snake, and in an astounding flurry drives the snake away.";
 	otherwise if the dragon is in location:
-		now the noun is nowhere;
+		now the bird is nowhere;
 		say [M154]"The little bird attacks the green dragon, and in an astounding flurry gets burnt to a cinder.  The ashes blow away.";
 		if the snake is on-stage, now the jewelry is elusive;
 	otherwise:
@@ -1390,7 +1404,8 @@ At_Top_Of_Small_Pit travels to Outside_Grate, Below_The_Grate, and In_Debris_Roo
 [L16]Instead of going west in At_Top_Of_Small_Pit, say "The crack is far too small for you to follow."
 [L20]Instead of going down from At_Top_Of_Small_Pit when the gold nugget is enclosed by the player:
 	say "You are at the bottom of the pit with a broken neck.";
-	end the story.
+	end the story;
+	rule succeeds.
 Instead of entering the crack, try going west.
 
 [O7]Some rough stone steps are a open unopenable door. They are down from At_Top_Of_Small_Pit and up from In_Hall_Of_Mists. [D0+1]"Rough stone steps lead [if location is At_Top_Of_Small_Pit]down the pit[otherwise]up the dome[end if]."
@@ -1466,8 +1481,9 @@ Instead of jumping in a room containing the fissure:
 	if crystal bridge is described:
 		say [M96]"I respectfully suggest you go across the bridge instead of jumping.";
 	otherwise:
-		say "You didn't make it.";[L21]
-		end the story.
+		say [L21]"You didn't make it.";
+		end the story;
+		rule succeeds.
 Instead of entering the fissure, try entering the crystal bridge.
 
 Section - 
@@ -1576,8 +1592,8 @@ After looking in At_Y2 when not in darkness:
 	unless Cave Closing is happening:
 		if a random chance of 1 in 4 succeeds, say [M8]"A hollow voice says, 'PLUGH'.";
 	continue the action.
-Instead of saying plugh in At_Y2, move player to Inside_Building as going.
-Instead of saying plover in At_Y2:
+After saying plugh in At_Y2, move player to Inside_Building as going.
+After saying plover in At_Y2:
 	if In_Plover_Room is unvisited, continue the action;
 	if emerald is enclosed by the player:
 		move emerald to the location;
@@ -1647,7 +1663,7 @@ Rule for supplying a missing noun while climbing and the location is In_Pit:
 	now the noun is up;
 	now clarified is true.
 
-[ccr]Some tiny-slits are scenery in In_Pit with printed name "tiny slits". "The slits form a complex pattern in the rock."
+[ccr]Some tiny-slits are privately-named scenery in In_Pit with printed name "tiny slits". "The slits form a complex pattern in the rock."
 Understand "tiny/slit/slits" as the tiny-slits.
 
 Section - 
@@ -1786,12 +1802,11 @@ At_West_End_Of_Twopit_Room travels to In_Slab_Room.
 
 [O25]The beanstalk is a not scenery climbable backdrop with printed name "[if height of plant is tall]top of 12-foot-tall beanstalk[otherwise]huge beanstalk".
 Understand "plant/stalk/bean/giant/tiny/little/murmuring/twelve/foot/tall/bellowing" as the beanstalk.
-To describe the beanstalk:
+Rule for writing a paragraph about the beanstalk:
 	if height of plant is tall, say [D1]"The top of a 12-foot-tall beanstalk is poking out of the west pit.";
 	otherwise say [D2]"There is a huge beanstalk growing out of the west pit up to the hole."
-Rule for writing a paragraph about the beanstalk: describe the beanstalk.
 Instead of examining the beanstalk:
-	describe the beanstalk;
+	carry out the writing a paragraph about activity with the beanstalk;
 	rule succeeds.
 Instead of climbing the beanstalk:
 	if height of plant is huge, try climbing the plant;
@@ -1809,12 +1824,11 @@ Instead of going outside in In_West_Pit, try going up.
 
 [O24]The plant is a climbable fixed in place thing in In_West_Pit with printed name "[if height of plant is tiny]plant[otherwise if height of plant is tall]beanstalk[otherwise]giant beanstalk". The plant has a height. The height of the plant is usually tiny.
 Understand "beanstalk/stalk/bean/giant/tiny/little/murmuring/twelve/foot/tall/bellowing" as the plant.
-To describe the plant:
+Rule for writing a paragraph about the plant:
 	if height of plant is:
 		-- tiny: say [D0]"There is a tiny little plant in the pit, murmuring 'Water, water, ...'";
 		-- tall: say [D2]"There is a 12-foot-tall beanstalk stretching up out of the pit, bellowing 'Water!! Water!!'";
 		-- huge: say [D4]"There is a gigantic beanstalk stretching all the way up to the hole."
-Rule for writing a paragraph about the plant: describe the plant.
 [L31]Instead of climbing the plant:
 	if height of plant is:
 		-- tiny:
@@ -1845,10 +1859,10 @@ Instead of pouring the bottled water on the plant:
 			now the beanstalk is nowhere;
 			now height of the second noun is tiny;
 	say line break;
-	describe the plant;
+	carry out the writing a paragraph about activity with the plant;
 	rule succeeds.
 Instead of examining the plant:
-	describe the plant;
+	carry out the writing a paragraph about activity with the plant;
 	rule succeeds.
 Rule for supplying a missing second noun while pouring and the plant is in the location:
 	now the second noun is the plant;
@@ -1997,7 +2011,7 @@ Instead of doing something when dragon is being attacked:
 		now the dragon is not being attacked;
 		continue the action.
 
-[O62]A persian rug is a fixed in place treasure in In_Secret_Canyon with deposit points 14.
+[O62]A persian rug is a fixed in place treasure in In_Secret_Canyon with description [ccr]"[if the dragon is in the location]The dragon is sprawled out on the Persian rug!![otherwise if the player does not enclose the rug]The Persian rug is spread out on the floor here.[otherwise]The Persian rug is the finest you've ever seen!" and deposit points 14.
 Understand "fine/finest/dragon's" as the persian rug.
 Rule for writing a paragraph about the persian rug:
 	if the dragon is in the location, say [D1]"The dragon is sprawled out on a Persian rug!!";
@@ -2218,7 +2232,7 @@ Understand "plover/room" as In_Plover_Room.
 Northeast is In_Dark_Room. North from In_Plover_Room is nowhere.
 Understand "passage" as west when the location is In_Plover_Room. Understand "dark" as northeast when the location is In_Plover_Room.
 Instead of going west from In_Plover_Room when the number of things enclosed by the player is greater than one or (the number of things enclosed by the player is one and the player does not enclose the emerald), say [M117]"Something you're carrying won't fit through the tunnel with you. You'd best take inventory and drop something."
-Instead of saying plover in In_Plover_Room:
+After saying plover in In_Plover_Room:
 	if player encloses the emerald, move the emerald to In_Plover_Room;
 	move the player to At_Y2 as going.
 Instead of going outside in In_Plover_Room, try going west.
@@ -2405,8 +2419,15 @@ After going through the rickety bridge when the bear is following you:
 		if the clam is not discovered and (the clam is in Beyond Troll Area or the trident is in Beyond Troll Area), now the pearl is elusive; [not coded in the original but sounds reasonable]
 		say [M162]"Just as you reach the other side, the bridge buckles beneath the weight of the bear, which was still following you around. You scrabble desperately for support, but as the bridge collapses you stumble back and fall into the chasm.";
 		end the story.
+Instead of jumping in a room that contains the rickety bridge:
+	unless the rickety bridge is wrecked:
+		say [M96]"I respectfully suggest you go across the bridge instead of jumping.";
+	otherwise:
+		say [L21]"You didn't make it.";
+		end the story;
+		rule succeeds.
 		
-The dead-bear is scenery with printed name "dead bear". Understand "dead/bear" as the dead-bear.
+The dead-bear is privately-named scenery with printed name "dead bear". Understand "dead/bear" as the dead-bear.
 Instead of attacking the dead-bear, say [M167]"For crying out loud, the poor thing is already dead!"
 
 [O33]A burly troll is a man in On_Sw_Side_Of_Chasm with description [ccr]"Trolls are close relatives with rocks and have skin as tough as that of a rhinoceros.". [D0]"A burly troll stands by the bridge and insists you throw him a treasure before you may cross." The troll can be placated.
@@ -2435,14 +2456,6 @@ The Beyond Troll Area is a region.
 Understand "northeast/ne/side/of/chasm" as On_Ne_Side_Of_Chasm.
 Northeast is In_Corridor. East from On_Ne_Side_Of_Chasm is nowhere.
 Understand "over/cross/across" as southwest when the location is On_Ne_Side_Of_Chasm.
-
-Instead of jumping in a room that contains the rickety bridge:
-	unless the rickety bridge is wrecked:
-		say [M96]"I respectfully suggest you go across the bridge instead of jumping.";
-	otherwise:
-		say [L21]"You didn't make it.";
-		end the story;
-		rule succeeds.
 
 [L123]In_Corridor is a forbidden room in Beyond Troll Area with printed name "In Corridor" and brief description "You're in corridor.". "You're in a long east/west corridor.  A faint rumbling noise can be heard in the distance."
 Understand "corridor" as In_Corridor.
@@ -2926,4 +2939,12 @@ Index map with
 	At_Junction_With_Warm_Walls mapped northeast of At_Fork_In_Path.
 	
 Index map with EPS file.
+
+Chapter - Testing
+
+Test grate with "in/take all/out/s/s/s/unlock/d".
+
+Test bird with "w/get cage/on/w/w/w/get bird/w/d/n/drop bird".
+
+Test all with "test grate/test bird".
 		
