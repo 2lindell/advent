@@ -18,7 +18,7 @@ The story creation year is 1977.
 
 Use scoring.
 
-Release along with an interpreter, the source text, and cover art.
+Release along with the "Parchment" interpreter, the source text, and cover art.
 
 Section - Tables
 
@@ -61,7 +61,9 @@ Instead of going outside in a maze room, say [I6]"Easier said than done."
 A diffmaze room is a kind of room. The printed name of a diffmaze room is usually "Maze".
 
 A deadend room is a kind of room. The printed name is usually "Dead End". The description is usually [ccr]"You have reached a dead end.". The brief description is usually "Dead End".
-Instead of going outside in a deadend room, move player to a random adjacent room as going.
+Instead of going outside in a deadend room:
+	move player to a random adjacent room as going;
+	rule succeeds.
 
 A person is either following you or wandering. A person is usually wandering.
 A person has a room called the prior location.
@@ -214,11 +216,12 @@ The advent room description body text rule is listed instead of the room descrip
 
 Section - Blasting
 
-Blasting it with is an action applying to two things. Understand "blast [something] with [something]" or "blast [something]" or "blast" as blasting it with.
+Blasting it with is an action applying to two visible things. Understand "blast [something] with [something]" or "blast [something]" or "blast" as blasting it with.
 Understand the commands "detonate", "ignite", and "blowup" as "blast".
 Report blasting it with (this is the block blasting rule): say [M67]"Blasting requires dynamite." (A).
 Rule for supplying a missing noun while blasting:
-	now the noun is the location.
+	now the noun is the location;
+	now clarified is true.
 Rule for supplying a missing second noun while blasting:
 	if the location encloses the mark rod, now the second noun is the mark rod;
 	otherwise now the second noun is the location.
@@ -230,6 +233,17 @@ Rule for supplying a missing noun when unlocking:
 	if a lockable thing (called the item) is enclosed by the location, now the noun is the item;
 	otherwise say [M28]"There is nothing here with a lock!"
 Rule for supplying a missing second noun when unlocking:
+	if the keys are enclosed by the location:
+		now the second noun is the keys;
+		say "(with [the second noun])[command clarification break]";
+	otherwise:
+		say [M31]"You have no keys!"
+		
+Understand "close" or "lock" as locking it with.
+Rule for supplying a missing noun when locking:
+	if a lockable thing (called the item) is enclosed by the location, now the noun is the item;
+	otherwise say [M28]"There is nothing here with a lock!"
+Rule for supplying a missing second noun when locking:
 	if the keys are enclosed by the location:
 		now the second noun is the keys;
 		say "(with [the second noun])[command clarification break]";
@@ -512,9 +526,8 @@ Chapter 4 - Phrases
 To move the/-- player to (someplace - object) as going:
 	now the prior location of the player is the location;
 	move the player to someplace, without printing a room description;
-	produce a room description with going spacing conventions;
-	rule succeeds. [This is here to tell Inform that the player succeesfully carried out his action, beacuse usually this is called from instead rules which default in failure of the action.]
-	
+	produce a room description with going spacing conventions.
+
 To prevent undo:
 	now undo allowed is false.
 	
@@ -953,7 +966,8 @@ When Cave Closing ends:
 	now all things in End Game Area are handled;
 	say [M132]"The sepulchral voice intones, 'The cave is now closed.'  As the echoes fade, there is a blinding flash of light (and a small puff of orange smoke). . . .[line break]As your eyes refocus, you look around and find...";
 	prevent undo;
-	move player to At_Ne_End as going.
+	move player to At_Ne_End as going;
+	rule succeeds.
 	
 Section - Reincarnation
 
@@ -1127,7 +1141,7 @@ To replace batteries:
 	move worn-out batteries to location;
 	now power remaining of the lantern is 2500.
 
-[O20]A small bottle is a container in Inside_Building.
+[O20]A small bottle is a transparent container in Inside_Building.
 Understand "jar/flask" as the bottle.
 Rule for writing a paragraph about the bottle:
 	if the bottle encloses water:
@@ -1169,6 +1183,7 @@ Accessibility when the bottle is enclosed by the location (this is the convert b
 
 [O21]The bottled water is a liquid in the small bottle with printed name "water in the bottle" and description [ccr]"It looks like ordinary water to me."
 Understand "h2o" as the bottled water.
+Rule for printing the name of the bottled water while listing contents: say "water".
 Instead of drinking the bottled water:
 	now the noun is nowhere;
 	say [M74]"The bottle of water is now empty.";
@@ -1182,6 +1197,7 @@ Does the player mean pouring the bottled water on: it is very likely.
 
 [O22]The bottled oil is a liquid with printed name "oil in the bottle" and description [ccr]"It looks like ordinary oil to me."
 Understand "lubricant/grease" as the bottled oil.
+Rule for printing the name of the bottled oil while listing contents: say "oil".
 Instead of pouring the bottled oil on:
 	now the noun is nowhere;
 	say [M77]"Your bottle is empty and the ground is wet.";
@@ -1261,7 +1277,6 @@ Instead of closing the grate:
 		try locking the grate with the keys;
 	otherwise:
 		say [M31]"You have no keys!"
-Does the player mean unlocking or locking the steel grate with something: it is very likely.
 
 Chapter - Facilis descensus Averno
 
@@ -1284,9 +1299,11 @@ Understand "surface" as east when the location is In_Cobble_Crawl. Understand "d
 Instead of going inside in In_Cobble_Crawl, try going west.
 In_Cobble_Crawl travels to At_Top_Of_Small_Pit, In_Debris_Room, and Outside_Grate.
 
-Instead of traveling to Outside_Grate when (the location is In_Cobble_Crawl or the location is In_Debris_Room or the location is In_Awkward_Sloping_E_W_Canyon or the location is In_Bird_Chamber or the location is At_Top_Of_Small_Pit) and the steel grate is locked, move player to Below_The_Grate as going.
+Instead of traveling to Outside_Grate when (the location is In_Cobble_Crawl or the location is In_Debris_Room or the location is In_Awkward_Sloping_E_W_Canyon or the location is In_Bird_Chamber or the location is At_Top_Of_Small_Pit) and the steel grate is locked:
+	move player to Below_The_Grate as going;
+	rule succeeds.
 
-[O4]The wicker cage is a container in In_Cobble_Crawl with description [ccr]"It's a small wicker cage."
+[O4]The wicker cage is a transparent container in In_Cobble_Crawl with description [ccr]"It's a small wicker cage."
 Rule for writing a paragraph about the wicker cage:
 	say [D0]"There is a small wicker cage discarded nearby.";
 	if the cage encloses something:
@@ -1773,7 +1790,8 @@ Instead of going in In_Bedquilt:
 	otherwise if destiny is nothing:
 		continue the action;
 	otherwise:
-		move player to destiny as going.
+		move player to destiny as going;
+		rule succeeds.
 
 Section - 
 
@@ -1838,7 +1856,8 @@ Rule for writing a paragraph about the plant:
 			try going up;
 		-- huge:
 			say [L26]"You clamber up the plant and scurry through the hole at the top.";
-			move player to In_Narrow_Corridor as going.
+			move player to In_Narrow_Corridor as going;
+			rule succeeds.
 Instead of taking the plant when the height of the plant is tiny, say [M115]"The plant has exceptionally deep roots and cannot be pulled free."
 Instead of pouring the bottled oil on the plant:
 	now the bottled oil is nowhere;
@@ -1959,9 +1978,12 @@ Understand "atop/stalactite" as Atop_Stalactite.
 Instead of going down in Atop_Stalactite:
 	if a random chance of 2 in 5 succeeds:
 		move the player to Alike_Maze_6 as going;
+		rule succeeds;
 	if a random chance of 1 in 2 succeeds:
 		move the player to Alike_Maze_9 as going;
-	move the player to Alike_Maze_4 as going.
+		rule succeeds;
+	move the player to Alike_Maze_4 as going;
+	rule succeeds.
 Instead of jumping or climbing in Atop_Stalactite, try going down.
 
 [O26]A stalactite is climbable scenery in Atop_Stalactite. [ccr]"You could probably climb down it, but you can forget coming back up."
@@ -1978,7 +2000,9 @@ After going to In_Secret_Canyon:
 Instead of going forward in In_Secret_Canyon:
 	if the approach of In_Secret_Canyon is In_Secret_N_S_Canyon_0, try going east;
 	otherwise try going north.
-Instead of going outside in In_Secret_Canyon, move the player to the approach of In_Secret_Canyon as going.
+Instead of going outside in In_Secret_Canyon:
+	move the player to the approach of In_Secret_Canyon as going;
+	rule succeeds.
 Instead of going in In_Secret_Canyon when the dragon is on-stage:
 	unless the room gone to is the approach of In_Secret_Canyon, say [M153]"The dragon looks rather nasty.  You'd best not try to get by." instead;
 	otherwise continue the action.
@@ -2349,8 +2373,11 @@ Section -
 Understand "witt's/witts/end" as At_Witts_End.
 Instead of going west from At_Witts_End, say [M126]"You have crawled around in some little holes and found your way blocked by a recent cave-in. You are now back in the main passage."
 Instead of going nowhere from At_Witts_End:
-	if a random chance of 19 in 20 succeeds, say [M56]"You have crawled around in some little holes and wound up back in the main passage.";
-	otherwise move the player to In_Anteroom as going.
+	if a random chance of 19 in 20 succeeds:
+		say [M56]"You have crawled around in some little holes and wound up back in the main passage.";
+	otherwise:
+		move the player to In_Anteroom as going;
+		rule succeeds.
 
 Chapter - North of the secret canyons, on the other side of the pit
 
@@ -2873,12 +2900,11 @@ Instead of attacking the sleeping dwarves, wake the sleeping dwarves.
 
 To wake the sleeping dwarves:
 	say [M136]"The resulting ruckus has awakened the dwarves. There are now several threatening little dwarves in the room with you! Most of them throw knives at you! All of them get you!";
-	end the story finally;
-	rule succeeds.
+	end the story finally.
 
 Section - 
 
-[L116]At_Sw_End is a lighted room in End Game Area with printed name "At SW End" and brief description "You're at SW end.". "You are at the southwest end of the repository.  To one side is a pit full of fierce green snakes.  On the other side is a row of small wicker cages, each of which contains a little sulking bird.  In one corner is a bundle of black rods with rusty marks on their ends.  A large number of velvet pillows are scattered about on the floor.  A vast mirror stretches off to the northeast.  At your feet is a large steel grate, next to which is a sign which reads, 'TREASURE VAULT. Keys in main office.'".
+[L116]At_Sw_End is a lighted room in End Game Area with printed name "At SW End" and brief description "You're at SW end.". "You are at the southwest end of the repository.  To one side is a pit full of fierce green snakes.  On the other side is a row of small wicker cages, each of which contains a little sulking bird.  In one corner is a bundle of black rods with rusty marks on their ends.  A large number of velvet pillows are scattered about on the floor.  A vast mirror stretches off to the northeast.  At your feet is a large steel grate, next to which is a sign which reads, 'TREASURE VAULT.  Keys in main office.'".
 Understand "southwest/sw/end/of/repository" as At_Sw_End.
 
 [ccr]The repository grate is a locked scenery door with printed name "steel grate" and description "It just looks like an ordinary steel grate.". It is down from At_Sw_End.
@@ -2886,6 +2912,7 @@ Understand "ordinary/steel/grating" as the repository grate.
 
 [O6]The mark rod is a thing in At_Sw_End with printed name "black rod" and description "It's a three foot black rod with a rusty mark on an end.". [D0]"A three foot black rod with a rusty mark on an end lies nearby."
 Understand "black/rusty/three/foot/iron/explosive/dynamite/blast" as the mark rod.
+After deciding the scope of the player when the location is in End Game Area: place the mark rod in scope.
 
 Instead of finding something in End Game Area, say [M138]"I daresay whatever you want is around here somewhere."
 
@@ -2946,5 +2973,4 @@ Test grate with "in/take all/out/s/s/s/unlock/d".
 
 Test bird with "w/get cage/on/w/w/w/get bird/w/d/n/drop bird".
 
-Test all with "test grate/test bird".
-		
+Test all with "test grate/test bird".		
