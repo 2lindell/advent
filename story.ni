@@ -18,7 +18,7 @@ The story creation year is 1977.
 
 Use scoring.
 
-Release along with the "Parchment" interpreter, the source text, and cover art.
+Release along with the "Quixe" interpreter, the source text, and cover art.
 
 Section - Tables
 
@@ -384,8 +384,9 @@ Rule for supplying a missing noun while switching off:
 
 Section - Stating
 
-[I invented this action to allow for the player to type just a noun and then be asked for a verb which was a functionality of the original parser. It doesn't always cause the parser to choose the correct noun for the next command so it's not the best solution. I also modified it so the parser will only pick it up if the object has been seen by the player before.]
+[I invented this action to allow for the player to type just a noun and then be asked for a verb which was a functionality of the original parser. It requires some hacks and may still have undesirable behavior.]
 Stated item is an object that varies.
+Parser guessed is a truth state that varies.
 Stating is an action out of world applying to one visible thing. Understand "[any seen thing]" as stating.
 Check stating:
 	If the noun is enclosed by the location:
@@ -393,11 +394,24 @@ Check stating:
 		say [MT]"What do you want to do with [the noun]?";
 	otherwise:
 		say [MT]"I see no [noun] here."
+		
+Before doing something when the stated item is not nothing and the noun is not the stated item and parser guessed is true:
+	now the noun is the stated item;
+	try the current action instead.
+	
+Rule for clarifying the parser's choice of something while the stated item is not nothing:
+	say "([the stated item])[command clarification break]";
+	now parser guessed is true.
+	
 Does the player mean doing something to the stated item: it is very likely.
-Every turn when doing something other than stating (this is the reset stated item rule), now the stated item is nothing.
+Rule for supplying a missing noun when the stated item is not nothing (this is the use previously stated item as the noun rule):
+	now the noun is the stated item.
+Every turn (this is the reset stated item rule), now the stated item is nothing.
+Every turn (this is the reset parser guessed rule), now parser guessed is false.
 
 Section - Giving
 
+Understand the command "feed" as something new.
 Understand "feed [something]" or "feed [something] to [something]" as giving it to. Understand "feed [something] [something]" as giving it to (with nouns reversed).
 Rule for supplying a missing second noun while giving:
 	now the second noun is the noun;
@@ -738,7 +752,7 @@ Rule for hinting the dark hint (this is the dark hint area rule):
 	unless the player is in the Plover Area, now turns of maze hint is -1 instead.
 Rule for hinting the witt hint (this is the witt hint area rule):
 	unless the player is in At_Witts_End, now turns of maze hint is -1 instead.
-Rule for hinting a hint (called current hint) (this is the main hint rule):
+Rule for hinting a hint (called current hint) (this is the increment time for hint rule):
 	increment turns of current hint;
 	unless turns of current hint is at least turns needed of current hint, rule fails.
 Rule for hinting the cave hint (this is the cave hint condition rule):
@@ -757,13 +771,7 @@ Rule for hinting the witt hint (this is the witt hint condition rule):
 Last hinting a hint (called current hint) (this is the clear hint time rule):
 	now turns of current hint is zero.
 
-The cave hint condition rule is listed last in the hinting rulebook.
-The bird hint condition rule is listed last in the hinting rulebook.
-The snake hint condition rule is listed last in the hinting rulebook.
-The maze hint condition rule is listed last in the hinting rulebook.
-The dark hint condition rule is listed last in the hinting rulebook.
-The witt hint condition rule is listed last in the hinting rulebook.
-The clear hint time rule is listed last in the hinting rulebook.
+The increment time for hint rule is listed before the cave hint condition rule in the hinting rulebook.
 
 To provide (current hint - a hint):
 	say question text of current hint;
@@ -839,7 +847,7 @@ Section - Dwarves Unmet
 
 Dwarves Unmet is a scene. Dwarves Unmet begins when Not Far In ends. Dwarves Unmet ends when the axe is on-stage.
 
-Every turn during Dwarves Unmet (this is the waiting to find dwarves rule):
+Every turn during Dwarves Unmet (this is the waiting to meet a dwarf rule):
 	if the location is for dwarves and a random chance of 1 in 20 succeeds:
 		let initial dwarf locations be {In_Hall_Of_Mt_King, West_Side_Of_Fissure, At_Y2, Alike_Maze_3, At_Complex_Junction};
 		repeat with r running from 1 to 2:
@@ -963,11 +971,11 @@ When Cave Closing ends:
 	move cage to At_Sw_End; [missing from I6 version]
 	move little bird to cage;
 	move velvet pillow to At_Sw_End;
-	now all things in End Game Area are handled;
+	now all things in End Game Area are not handled;
 	say [M132]"The sepulchral voice intones, 'The cave is now closed.'  As the echoes fade, there is a blinding flash of light (and a small puff of orange smoke). . . .[line break]As your eyes refocus, you look around and find...";
 	prevent undo;
 	move player to At_Ne_End as going;
-	rule succeeds.
+	now the prior location of the player is nothing.
 	
 Section - Reincarnation
 
@@ -2468,8 +2476,10 @@ Instead of giving something to the troll:
 		rule succeeds;
 	otherwise if the noun is the tasty food:
 		say [M182]"Gluttony is not one of the troll's vices.  Avarice, however, is.";
+	otherwise if the noun is the axe:
+		say [M158M]"The troll deftly catches the axe, examines it carefully, and tosses it back, declaring, 'Good workmanship, but it's not valuable enough.'";
 	otherwise:
-		say [M158M]"The troll deftly catches [the noun], examines it carefully, and tosses it back, declaring, 'Good workmanship, but it's not valuable enough.'"
+		continue the action.
 Instead of throwing something at the troll, try giving the noun to the troll.
 Instead of asking the troll to try doing something, say [I6]"You'll be lucky."
 Instead of answering the troll that something, say [I6]"Trolls make poor conversation."
@@ -2883,23 +2893,27 @@ Southwest is At_Sw_End.
 Understand "huge/big/large/suspended/hanging/vanity/dwarvish" as the enormous mirror.
 Instead of attacking or breaking the enormous mirror:
 	say [M197]"You strike the mirror a resounding blow, whereupon it shatters into a myriad tiny fragments.[paragraph break]";
-	wake the sleeping dwarves.
+	wake the sleeping dwarves;
+	rule succeeds.
 
 [ccr]A collection of adventure game materials is a backdrop with description "You've seen everything in here already, albeit in somewhat different contexts.". It is in At_Ne_End and At_Sw_End.
 Understand "stuff/junk/torches/objects/repository/massive/sundry" as the materials when the player is in At_Ne_End.
 Understand "pit/snake/snakes/fierce/green/stuff/junk/repository/massive/sundry" as the materials when the player is in At_Sw_End.
-Instead of taking the materials, say "Realizing that by removing the loot here you'd be ruining the game for future players, you leave the 'Adventure' materials where they are."
+Instead of taking the materials, say [ccr]"Realizing that by removing the loot here you'd be ruining the game for future players, you leave the 'Adventure' materials where they are."
 
 [ccr]Some sleeping dwarves are men in At_Ne_End with indefinite article "many" and description "I wouldn't bother the dwarves if I were you."
 Understand "dwarf/snoring/dozing/snoozing" as the sleeping dwarves.
-Instead of taking the sleeping dwarves, say "What, all of them?"
+Instead of taking the sleeping dwarves, say [I6]"What, all of them?"
 Instead of waking the sleeping dwarves:
 	say [M199]"You prod the nearest dwarf, who wakes up grumpily, takes one look at you, curses, and grabs for his axe.[paragraph break]";
-	wake the sleeping dwarves.
-Instead of attacking the sleeping dwarves, wake the sleeping dwarves.
+	wake the sleeping dwarves;
+	rule succeeds.
+Instead of attacking the sleeping dwarves:
+	wake the sleeping dwarves;
+	rule succeeds.
 
 To wake the sleeping dwarves:
-	say [M136]"The resulting ruckus has awakened the dwarves. There are now several threatening little dwarves in the room with you! Most of them throw knives at you! All of them get you!";
+	say [M136]"The resulting ruckus has awakened the dwarves.  There are now several threatening little dwarves in the room with you!  Most of them throw knives at you!  All of them get you!";
 	end the story finally.
 
 Section - 
@@ -2918,12 +2932,12 @@ Instead of finding something in End Game Area, say [M138]"I daresay whatever you
 
 Instead of blasting some object with in At_Sw_End when the mark rod is in At_Ne_End:
 	increase the score by 35;
-	say [M133]"There is a loud explosion, and a twenty-foot hole appears in the far wall, burying the dwarves in the rubble. You march through the hole and find yourself in the main office, where a cheering band of friendly elves carry the conquering adventurer off into the sunset.";
+	say [M133]"There is a loud explosion, and a twenty-foot hole appears in the far wall, burying the dwarves in the rubble.  You march through the hole and find yourself in the main office, where a cheering band of friendly elves carry the conquering adventurer off into the sunset.";
 	end the story finally;
 	rule succeeds.
 Instead of blasting some object with in At_Ne_End when the mark rod is in At_Sw_End:
 	increase the score by 20;
-	say [M134]"There is a loud explosion, and a twenty-foot hole appears in the far wall, burying the snakes in the rubble. A river of molten lava pours in through the hole, destroying everything in its path, including you!";
+	say [M134]"There is a loud explosion, and a twenty-foot hole appears in the far wall, burying the snakes in the rubble.  A river of molten lava pours in through the hole, destroying everything in its path, including you!";
 	end the story finally;
 	rule succeeds.
 Instead of blasting some object with the mark rod:
