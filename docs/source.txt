@@ -18,7 +18,7 @@ The story creation year is 1977.
 
 Use scoring.
 
-Release along with the "Quixe" interpreter, the source text, and cover art.
+Release along with an interpreter, the source text, and cover art.
 
 Section - Tables
 
@@ -87,7 +87,7 @@ Understand "downward/downwards/descend" as down.
 
 Section - Dwarves
 
-A dwarf is a kind of man. The plural of dwarf is dwarves. [M4]"There is a threatening little dwarf in the room with you!" The description of a dwarf is [ccr]"It's probably not a good idea to get too close. Suffice it to say the little guy's pretty aggressive."
+A dwarf is a kind of man. The plural of dwarf is dwarves. [M4]"There is a threatening little dwarf in the room with you!" The description of a dwarf is [ccr]"It's probably not a good idea to get too close.  Suffice it to say the little guy's pretty aggressive."
 Understand "nasty/mean/threatening/little" as a dwarf. A dwarf is always undescribed.
 
 
@@ -414,8 +414,11 @@ Section - Giving
 Understand the command "feed" as something new.
 Understand "feed [something]" or "feed [something] to [something]" as giving it to. Understand "feed [something] [something]" as giving it to (with nouns reversed).
 Rule for supplying a missing second noun while giving:
-	now the second noun is the noun;
+	unless the noun is a person:
+		say "[text of the can't give to a non-person rule response (A)][line break]";
+		continue the activity;
 	if the food is enclosed by the location:
+		now the second noun is the noun;
 		now the noun is the food;
 		say "(with [the noun])[command clarification break]";
 	otherwise:
@@ -1106,6 +1109,7 @@ Does the player mean locking or unlocking something with the keys: it is likely.
 [O19]The tasty food is an edible thing in Inside_Building with indefinite article "some" and description [ccr]"Sure looks yummy!". [D0]"There is food here."
 Understand "ration/rations/tripe/yummy/delicious/scrumptious" as the tasty food.
 After eating the tasty food, say [M72]"Thank you, that was delicious!"
+Instead of giving the tasty food to the player, try eating the noun.
 
 [O2]A brass lantern is a device in Inside_Building with description [ccr]"It is a shiny brass lamp[if switched off].  It is not currently lit.[otherwise if power remaining of lantern is less than 30], glowing dimly.[otherwise], glowing brightly.". [D0+1]"There is a [if switched off]shiny brass lamp [otherwise]lamp shining [end if]nearby."
 Understand "lamp/headlamp/headlight/light/shiny" as the brass lantern.
@@ -2255,7 +2259,7 @@ Understand "alcove" as In_Alcove.
 Northwest is In_Misty_Cavern. East is In_Plover_Room.
 Understand "passage" as east when the location is In_Alcove.
 In_Alcove travels to In_Misty_Cavern.
-Instead of going east from In_Alcove when the number of things enclosed by the player is greater than one or (the number of things enclosed by the player is one and the player does not enclose the emerald), say [M117]"Something you're carrying won't fit through the tunnel with you. You'd best take inventory and drop something."
+Instead of going east from In_Alcove when the player encloses something that is not the emerald, say [M117]"Something you're carrying won't fit through the tunnel with you. You'd best take inventory and drop something."
 
 Section - 
 
@@ -2263,7 +2267,7 @@ Section -
 Understand "plover/room" as In_Plover_Room.
 Northeast is In_Dark_Room. North from In_Plover_Room is nowhere.
 Understand "passage" as west when the location is In_Plover_Room. Understand "dark" as northeast when the location is In_Plover_Room.
-Instead of going west from In_Plover_Room when the number of things enclosed by the player is greater than one or (the number of things enclosed by the player is one and the player does not enclose the emerald), say [M117]"Something you're carrying won't fit through the tunnel with you. You'd best take inventory and drop something."
+Instead of going west from In_Plover_Room when the player encloses something that is not the emerald, say [M117]"Something you're carrying won't fit through the tunnel with you. You'd best take inventory and drop something."
 After saying plover in In_Plover_Room:
 	if player encloses the emerald, move the emerald to In_Plover_Room;
 	move the player to At_Y2 as going.
@@ -2303,30 +2307,37 @@ Instead of going south from In_Shell_Room when the giant clam is enclosed by the
 	if the giant clam is discovered, say [M119]"You can't fit this five-foot oyster through that little passage!";
 	otherwise say [M118]"You can't fit this five-foot clam through that little passage!"
 
-[O14+O15]A giant clam is a thing in In_Shell_Room with printed name "giant [if discovered]oyster[otherwise]clam". [ccr]"A giant bivalve of some kind." The clam can be discovered. The clam can be hinted.
+[O14+O15]A giant clam is a thing in In_Shell_Room with printed name "giant [if discovered]oyster[otherwise]clam" and description [ccr]"A giant bivalve of some kind." The clam can be discovered. The clam can be hinted.
 Understand "oyster/bivalve" as the clam.
 Rule for printing the name of the giant clam while taking inventory: say "giant [if discovered]oyster  >GROAN!<[otherwise]clam  >GRUNT!<".
 Rule for writing a paragraph about the giant clam:
 	if the clam is discovered, say [O15D0]"There is an enormous oyster here with its shell tightly closed.";
 	otherwise say [O14D0]"There is an enormous clam here with its shell tightly closed."
-Instead of opening the giant clam, try unlocking the clam with the player.
+Instead of opening the giant clam:
+	if the location encloses the trident:
+		say "(with [the trident])[command clarification break]";
+		try unlocking the clam with the trident;
+	otherwise:
+		if the clam is discovered, say [M123]"You don't have anything strong enough to open the oyster.";
+		otherwise say [M122]"You don't have anything strong enough to open the clam."
 Instead of unlocking the clam with something:
-	if the clam is discovered, say [M123]"You don't have anything strong enough to open the oyster.";
-	otherwise say [M122]"You don't have anything strong enough to open the clam."
+	if the clam is discovered, say [M123M]"That's not strong enough to open the oyster.";
+	otherwise say [M122M]"That's not strong enough to open the clam."
 Instead of unlocking the clam with the trident:
 	if the clam is discovered:
-		if the player encloses the clam, say [M121]"I advise you to put down the oyster before opening it.  >WRENCH!<";
+		if the player encloses the clam, say [M121]"I advise you to put down the oyster before opening it.  >WRENCH!<[line break]";
 		otherwise say [M125]"The oyster creaks open, revealing nothing but oyster inside.  It promptly snaps shut again.";
 	otherwise:
 		if the player encloses the clam:
 			say [M120]"I advise you to put down the clam before opening it.  >STRAIN!<";
+			say line break;
 		otherwise:
 			now the noun is discovered;
 			move pearl to In_A_Cul_De_Sac;
 			say [M124]"A glistening pearl falls out of the clam and rolls away.  Goodness, this must really be an oyster.  (I never was very good at identifying bivalves.)  Whatever it is, it has now snapped shut again.";
 			rule succeeds.
 Instead of attacking the giant clam, say [M150]"The shell is very strong and is impervious to attack."
-After taking the giant clam when the location is in End Game Area, say [O15D1]"Interesting.  There seems to be something written on the underside of the oyster."
+After taking the not handled giant clam when the location is in End Game Area, say [O15D1]"Interesting.  There seems to be something written on the underside of the oyster."
 Instead of reading or examining the handled giant clam in End Game Area:
 	unless the giant clam is hinted:
 		say [M192]"Hmmm, this looks like a clue, which means it'll cost you 10 points to read it.  Should I go ahead and read it anyway?";
@@ -2339,6 +2350,8 @@ Instead of reading or examining the handled giant clam in End Game Area:
 	otherwise:
 		say [M194]"It says the same thing it did before.";
 	rule succeeds.
+Does the player mean unlocking the clam with the trident: it is very likely.
+Rule for supplying a missing noun while attacking and the clam is enclosed by the location and another person is not enclosed by the location: now the noun is the clam.
 
 [O61]A glistening pearl is a treasure with description [ccr]"It's incredibly large!" and deposit points 14. [D0]"Off to one side lies a glistening pearl!"
 Understand "incredible/incredibly/large'" as the pearl.
@@ -2477,7 +2490,7 @@ Instead of giving something to the troll:
 	otherwise if the noun is the tasty food:
 		say [M182]"Gluttony is not one of the troll's vices.  Avarice, however, is.";
 	otherwise if the noun is the axe:
-		say [M158M]"The troll deftly catches the axe, examines it carefully, and tosses it back, declaring, 'Good workmanship, but it's not valuable enough.'";
+		say [M158]"The troll deftly catches the axe, examines it carefully, and tosses it back, declaring, 'Good workmanship, but it's not valuable enough.'";
 	otherwise:
 		continue the action.
 Instead of throwing something at the troll, try giving the noun to the troll.
@@ -2551,7 +2564,7 @@ Outside is At_Junction_With_Warm_Walls.
 Understand "crawl" as west when the location is In_Chamber_Of_Boulders.
 In_Chamber_Of_Boulders travels to At_Fork_In_Path and At_Breath_Taking_View.
 
-[ccr]Some warm boulders are scenery in In_Chamber_Of_Boulders. "They're just ordinary boulders. They're warm."
+[ccr]Some warm boulders are scenery in In_Chamber_Of_Boulders. "They're just ordinary boulders.  They're warm."
 Understand "boulder/rocks/stones" as the boulders.
 Instead of looking under, pushing, or pulling the warm boulders, say [I6]"You'd have to blast them aside."
 
@@ -2613,15 +2626,16 @@ Instead of throwing the axe at the bear:
 		now the axe is near the bear;
 		say [M164]"The axe misses and lands near the bear where you can't get at it.";
 		rule succeeds.
-Instead of giving the tasty food to the bear:
+Instead of giving the tasty food to the ferocious bear:
 	now the axe is not near the bear;
 	now the tasty food is nowhere;
 	now the bear is friendly;
 	say [M168]"The bear eagerly wolfs down your food, after which he seems to calm down considerably and even becomes rather friendly.";
 	rule succeeds.
-Instead of giving something to the bear:
-	if the bear is friendly, say [M174]"There is nothing here to eat.";
-	otherwise say [M102]"There's nothing here it wants to eat (except perhaps you)."
+Instead of giving something to the ferocious bear:
+	unless the tasty food is enclosed by the location, say [M102]"There's nothing here it wants to eat (except perhaps you).";
+	otherwise say [M102M]"That's not something it wants to eat."
+Rule for supplying a missing second noun while giving and the noun is the bear and the tasty food is not enclosed by the location: say [M102]"There's nothing here it wants to eat (except perhaps you)."
 Instead of asking the bear to try doing something, say [I6]"This is a Bear of very little brain."
 Instead of asking the bear about something, say [I6]"This is a Bear of very little brain."
 Instead of answering the bear that something, say [I6]"This is a Bear of very little brain."
@@ -2646,9 +2660,6 @@ After taking inventory when the bear is following you, say [M141]"You are being 
 After going when the bear is following you:
 	move bear to location;
 	continue the action.
-Rule for choosing notable locale objects for In_Barren_Room when the chain is locked (this is the put chain after bear rule):
-	set the locale priority of the chain to 4;
-	continue the activity.
 
 [O64]A golden chain is a lockable locked treasure in In_Barren_Room with description [ccr]"The chain has thick links of solid gold!" and deposit points 14. The chain can be lockable. The chain can be locked or unlocked. The set of keys unlocks the chain.
 Understand "links/shackles/solid/gold/thick/chains" as the chain.
@@ -2673,10 +2684,12 @@ Instead of locking the unlocked chain with the keys:
 		say [M173]"There is nothing here to which the chain can be locked."
 After unlocking the chain with something:
 	say [M171]"The chain is now unlocked.";
-	now the chain is unlocked;
 	if the bear is chained:
 		now the bear is free;
 		increase the score by 2.
+Rule for choosing notable locale objects for In_Barren_Room when the chain is locked (this is the put chain after bear rule):
+	set the locale priority of the chain to 4;
+	continue the activity.
 
 Chapter - The Different Maze
 
