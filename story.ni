@@ -1788,7 +1788,7 @@ Understand "bedquilt" as In_Bedquilt.
 West is In_Swiss_Cheese_Room. South is In_Slab_Room. Up is In_Dusty_Rock_Room. North is At_Junction_Of_Three. Down is In_Anteroom. Southwest from In_Bedquilt is nowhere.
 In_Bedquilt travels to In_Slab_Room.
 Instead of going in In_Bedquilt:
-	let destiny be a room;
+	let destiny be nothing;
 	if (the noun is south or the noun is up or the noun is down) and a random chance of 4 in 5 succeeds:
 		let destiny be In_Bedquilt;
 	otherwise if the noun is up and a random chance of 1 in 2 succeeds:
