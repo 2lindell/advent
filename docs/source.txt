@@ -6,6 +6,7 @@
 		O - Object with
 			D - Description based on property 0, 1, or 2
 		M - Message (with additional M for "modified")
+		C - Class rankings
 	I also commented if a description/scenery object came from Colossal Cave Revisited (ccr) or the Inform 6 version (I6)]
 
 Part 1 - Setup
@@ -1341,7 +1342,7 @@ Understand "stuff/mud" as the debris.
 
 [ccr]A note is scenery in In_Debris_Room. "The note says 'MAGIC WORD XYZZY'."
 
-[O5]A black rod is a thing in In_Debris_Room with printed name "black rod" and description [ccr]"It's a three foot black rod with a rusty star on an end.". [D0]"A three foot black rod with a rusty star on an end lies nearby."
+[O5]A black rod is a thing in In_Debris_Room with description [ccr]"It's a three foot black rod with a rusty star on an end.". [D0]"A three foot black rod with a rusty star on an end lies nearby."
 Understand "star/rusty/three/foot/iron" as the black rod.
 After waving the black rod when the location contains the fissure:
 	if Cave Closing is happening:
@@ -2016,7 +2017,7 @@ Instead of going outside in In_Secret_Canyon:
 	move the player to the approach of In_Secret_Canyon as going;
 	rule succeeds.
 Instead of going in In_Secret_Canyon when the dragon is on-stage:
-	unless the room gone to is the approach of In_Secret_Canyon, say [M153]"The dragon looks rather nasty.  You'd best not try to get by." instead;
+	unless the room gone to is the approach of In_Secret_Canyon, say [M153]"The dragon looks rather nasty.  You'd best not try to get by.";
 	otherwise continue the action.
 
 [O31]A dragon is an animal in In_Secret_Canyon with description [ccr]"I wouldn't mess with it if I were you.". [D0]"A huge green fierce dragon bars the way![no line break]".
@@ -2238,7 +2239,7 @@ Instead of inserting the ming vase into the stream:
 	say [M145]"The sudden change in temperature has delicately shattered the vase.";
 	rule succeeds.
 
-[ccr]Some worthless shards of pottery are a thing with description "They look to be the remains of what was once a beautiful vase. I guess some oaf must have dropped it.". [O58D2]"The floor is littered with worthless shards of pottery."
+[ccr]Some worthless shards of pottery are a thing with description "They look to be the remains of what was once a beautiful vase.  I guess some oaf must have dropped it.". [O58D2]"The floor is littered with worthless shards of pottery."
 Understand "remains/vase" as the shards.
 
 Section - 
@@ -2267,7 +2268,7 @@ Section -
 Understand "plover/room" as In_Plover_Room.
 Northeast is In_Dark_Room. North from In_Plover_Room is nowhere.
 Understand "passage" as west when the location is In_Plover_Room. Understand "dark" as northeast when the location is In_Plover_Room.
-Instead of going west from In_Plover_Room when the player encloses something that is not the emerald, say [M117]"Something you're carrying won't fit through the tunnel with you. You'd best take inventory and drop something."
+Instead of going west from In_Plover_Room when the player encloses something that is not the emerald, say [M117]"Something you're carrying won't fit through the tunnel with you.  You'd best take inventory and drop something."
 After saying plover in In_Plover_Room:
 	if player encloses the emerald, move the emerald to In_Plover_Room;
 	move the player to At_Y2 as going.
@@ -2538,7 +2539,7 @@ At_Breath_Taking_View travels to At_Fork_In_Path.
 Instead of going down in At_Breath_Taking_View, say [M110]"Don't be ridiculous!"
 Instead of jumping in At_Breath_Taking_View, try going down.
 
-[O37]An active volcano is scenery in At_Breath_Taking_View. [ccr]"Great gouts of molten lava come surging out of the volcano and go cascading back down into the depths. The glowing rock fills the farthest reaches of the cavern with a blood-red glare, giving everything an eerie, macabre appearance."
+[O37]An active volcano is scenery in At_Breath_Taking_View. [ccr]"Great gouts of molten lava come surging out of the volcano and go cascading back down into the depths.  The glowing rock fills the farthest reaches of the cavern with a blood-red glare, giving everything an eerie, macabre appearance."
 Understand "geyser/rock/glowing/blood/blood-red/red/eerie/macabre" as the volcano.
 
 [ccr]Some sparks of ash are scenery in At_Breath_Taking_View. "The sparks too far away for you to get a good look at them."
@@ -2847,7 +2848,7 @@ Instead of taking the vending machine, say [ccr]"The vending machine is far too 
 Understand "scrawl/writing/script/scrawled/flowery" as the message.
 Instead of reading the message, try examining the noun.
 
-[O39]Some fresh batteries are a thing with description [ccr]"They look like ordinary batteries. (A sepulchral voice says, 'Still going!')". [D0]"There are fresh batteries here." They are in the vending machine.
+[O39]Some fresh batteries are a thing with description [ccr]"They look like ordinary batteries.  (A sepulchral voice says, 'Still going!')". [D0]"There are fresh batteries here." They are in the vending machine.
 Understand "battery" as the fresh batteries.
 The fresh batteries can be used.
 
