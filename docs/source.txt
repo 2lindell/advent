@@ -17,6 +17,10 @@ The story headline is "The Interactive Original".
 
 The story creation year is 1977.
 
+The story genre is "Cave Crawl".
+
+The release number is 2.
+
 Use scoring.
 
 Release along with an interpreter, the source text, and cover art.
@@ -56,15 +60,15 @@ A room can be for dwarves. A room is usually for dwarves. A room can be forbidde
 
 An aboveground room is a kind of room.  An aboveground room is never for dwarves. An aboveground room is always lighted.
 
-A maze room is a kind of room. The printed name of a maze room is usually "Maze". The description is usually "You are in a maze of twisty little passages, all alike."
+A maze room is a kind of room. The printed name is usually "Maze". The description is usually "You are in a maze of twisty little passages, all alike."
 Instead of going outside in a maze room, say [I6]"Easier said than done."
 
-A diffmaze room is a kind of room. The printed name of a diffmaze room is usually "Maze".
+A diffmaze room is a kind of room. The printed name is usually "Maze".
 
 A deadend room is a kind of room. The printed name is usually "Dead End". The description is usually [ccr]"You have reached a dead end.". The brief description is usually "Dead End".
 Instead of going outside in a deadend room:
 	move player to a random adjacent room as going;
-	rule succeeds.
+	rule succeeds. [This is here because the default outcome of the instead rulebook is failure which then marks the action as failed. Often, however, instead rules are really successful actions, so I put this in every time this comes up. I know it's not really neccessary, but it makes the outcome correct if you ever wanted to test the success of actions.]
 
 A person is either following you or wandering. A person is usually wandering.
 A person has a room called the prior location.
@@ -88,13 +92,13 @@ Understand "downward/downwards/descend" as down.
 
 Section - Dwarves
 
-A dwarf is a kind of man. The plural of dwarf is dwarves. [M4]"There is a threatening little dwarf in the room with you!" The description of a dwarf is [ccr]"It's probably not a good idea to get too close.  Suffice it to say the little guy's pretty aggressive."
+A dwarf is a kind of man. The plural is dwarves. [M4]"There is a threatening little dwarf in the room with you!" The description of a dwarf is [ccr]"It's probably not a good idea to get too close.  Suffice it to say the little guy's pretty aggressive."
 Understand "nasty/mean/threatening/little" as a dwarf. A dwarf is always undescribed.
-
 
 Section - Treasures
 
 A treasure is a kind of thing. A treasure has a number called deposit points. The deposit points of a treasure is usually 10. A treasure can be found, unfound, or elusive. A treasure is usually unfound.
+Understand "treasure" as a treasure.
 After writing a paragraph about a treasure (called the item):
 	if the item is unfound:
 		now the item is found;
@@ -224,8 +228,7 @@ Rule for supplying a missing noun while blasting:
 	now the noun is the location;
 	now clarified is true.
 Rule for supplying a missing second noun while blasting:
-	if the location encloses the mark rod, now the second noun is the mark rod;
-	otherwise now the second noun is the location.
+	now the second noun is the location.
 	
 Section - Locking/Unlocking
 
@@ -304,6 +307,8 @@ Understand the commands "release", "free", and "dump" as "drop". Understand "thr
 The can't drop what's not held rule response (A) is [M29]"You aren't carrying it!"
 The standard report dropping rule response (A) is [M54]"OK."
 The can't drop what's already dropped rule is not listed in any rulebook.
+
+Does the player mean taking a fixed in place thing: it is unlikely.
 
 Section - Taking inventory
 
@@ -385,28 +390,30 @@ Rule for supplying a missing noun while switching off:
 
 Section - Stating
 
-[I invented this action to allow for the player to type just a noun and then be asked for a verb which was a functionality of the original parser. It requires some hacks and may still have undesirable behavior.]
-Stated item is an object that varies.
+[I invented this action to allow for the player to type just a noun and then be asked for a verb which was a functionality of the original parser. It requires some hacks and may still have undesirable behavior. I also only allowed nouns that the player has already seen.]
+The stated item is an object that varies.
 Parser guessed is a truth state that varies.
-Stating is an action out of world applying to one visible thing. Understand "[any seen thing]" as stating.
-Check stating:
+Stating is an action out of world applying to one visible thing. Understand "[any seen thing]" as stating. [I made this action out of world so it doesn't advance the turn count.]
+Check stating (this is the ask for verb if applicable rule):
 	If the noun is enclosed by the location:
 		now the stated item is the noun;
 		say [MT]"What do you want to do with [the noun]?";
 	otherwise:
 		say [MT]"I see no [noun] here."
-		
-Before doing something when the stated item is not nothing and the noun is not the stated item and parser guessed is true:
-	now the noun is the stated item;
-	try the current action instead.
-	
-Rule for clarifying the parser's choice of something while the stated item is not nothing:
-	say "([the stated item])[command clarification break]";
-	now parser guessed is true.
-	
+
 Does the player mean doing something to the stated item: it is very likely.
+
 Rule for supplying a missing noun when the stated item is not nothing (this is the use previously stated item as the noun rule):
 	now the noun is the stated item.
+	
+Rule for clarifying the parser's choice of something while the stated item is not nothing (this is the mention the previously stated item instead of the parser's guess rule): [we will fix the actual noun of the action later]
+	say "([the stated item])[command clarification break]";
+	now parser guessed is true.
+		
+Before doing something when the stated item is not nothing and the noun is not the stated item and parser guessed is true (this is the replace parser's guess with previosly stated item rule):
+	now the noun is the stated item;
+	try the current action instead.
+
 Every turn (this is the reset stated item rule), now the stated item is nothing.
 Every turn (this is the reset parser guessed rule), now parser guessed is false.
 
@@ -952,15 +959,17 @@ Every turn during Cave Closing (this is the countdown during closing rule): decr
 
 Instead of saying xyzzy in In_Debris_Room during Cave Closing:
 	if the clock of Cave Closing is greater than 15, now the clock of Cave Closing is 15;
-	say [M130]"A mysterious recorded voice groans into life and announces:[line break]'This exit is closed.  Please leave via main office.'"
+	say exit closed.
 
 Instead of saying plugh in At_Y2 during Cave Closing:
 	if the clock of Cave Closing is greater than 15, now the clock of Cave Closing is 15;
-	say [M130]"A mysterious recorded voice groans into life and announces:[line break]'This exit is closed.  Please leave via main office.'"
+	say exit closed.
 
 Instead of going through the steel grate during Cave Closing:
 	if the clock of Cave Closing is greater than 15, now the clock of Cave Closing is 15;
-	say [M130]"A mysterious recorded voice groans into life and announces:[line break]'This exit is closed.  Please leave via main office.'"
+	say exit closed.
+
+To say exit closed: say [M130]"A mysterious recorded voice groans into life and announces:[line break]'This exit is closed.  Please leave via main office.'"
 
 When Cave Closing ends:
 	increase the score by 10;
@@ -1130,11 +1139,11 @@ Every turn when the lantern is switched on (this is the lamp power rule):
 			if fresh batteries are used:
 				say [M189]"Your lamp is getting dim, and you're also out of spare batteries.  You'd best start wrapping this up.";
 			otherwise if fresh batteries are in vending machine and Dead_End_14 is visited:
-				say [M183]"Your lamp is getting dim.  You'd best start wrapping this up, unless you can find some fresh batteries.   I seem to recall there's a vending machine in the maze.  Bring some coins with you.";
+				say [M183]"Your lamp is getting dim.  You'd best start wrapping this up, unless you can find some fresh batteries.  I seem to recall there's a vending machine in the maze.  Bring some coins with you.";
 			otherwise if fresh batteries are not in vending machine and fresh batteries are not enclosed by the location:
 				say [M187]"Your lamp is getting dim.  You'd best go back for those batteries.";
 Instead of doing something in an aboveground room when the power remaining of the lantern is 0:
-		say [M185]"There's not much point in wandering around out here, and you can't explore the cave without a lamp.   So let's just call it a day.";
+		say [M185]"There's not much point in wandering around out here, and you can't explore the cave without a lamp.  So let's just call it a day.";
 		end the story finally.
 Instead of burning the lantern, try switching on the noun.
 Instead of rubbing the lantern, say [M75]"Rubbing the electric lamp is not particularly rewarding.  Anyway, nothing exciting happens."
@@ -1389,6 +1398,7 @@ Instead of removing the little bird from the wicker cage, abide by the free the 
 Instead of taking the little bird:
 	if the noun is in the wicker cage:
 		try taking the wicker cage;
+		if rule succeeded, rule succeeds;
 	otherwise if the wicker cage is not enclosed by the player:
 		say [M27]"You can catch the bird, but you cannot carry it.";
 	otherwise:
@@ -1396,7 +1406,7 @@ Instead of taking the little bird:
 		say [I6]"You catch the bird in the wicker cage.";
 		rule succeeds.
 Instead of dropping the little bird:
-	unless the player encloses the noun, say [M29]"You aren't carrying it!";
+	unless the cage encloses the noun, say [M29]"You aren't carrying it!";
 	otherwise abide by the free the bird rule.
 Instead of giving something to the little bird, say [M100]"It's not hungry (it's merely pinin['] for the fjords).  Besides, you have no bird seed."
 Instead of asking the little bird to try doing something, say [I6]"Cheep! Chirp!"
@@ -1610,7 +1620,7 @@ West and up is Crossover.
 Instead of going outside in In_West_Side_Chamber, try going east.
 Understand "hall" as east when the location is In_West_Side_Chamber.
 
-[O54]Some rare coins are a treasure in In_West_Side_Chamber with indefinite article "many" and description [ccr]"They're a numismatist's dream!". "There are many coins here!"
+[O54]Some rare coins are a treasure in In_West_Side_Chamber with indefinite article "many" and description [ccr]"They're a numismatist's dream!". [D0]"There are many coins here!"
 
 Chapter - The Y2 Rock Room and environs, slightly below
 
@@ -2941,6 +2951,8 @@ Understand "ordinary/steel/grating" as the repository grate.
 [O6]The mark rod is a thing in At_Sw_End with printed name "black rod" and description "It's a three foot black rod with a rusty mark on an end.". [D0]"A three foot black rod with a rusty mark on an end lies nearby."
 Understand "black/rusty/three/foot/iron/explosive/dynamite/blast" as the mark rod.
 After deciding the scope of the player when the location is in End Game Area: place the mark rod in scope.
+Rule for supplying a missing second noun while blasting and the location is in End Game Area:
+	now the second noun is the mark rod.
 
 Instead of finding something in End Game Area, say [M138]"I daresay whatever you want is around here somewhere."
 
@@ -3001,4 +3013,6 @@ Test grate with "in/take all/out/s/s/s/unlock/d".
 
 Test bird with "w/get cage/on/w/w/w/get bird/w/d/n/drop bird".
 
-Test all with "test grate/test bird".		
+Test dwarves with "u/get axe/throw axe/get axe/throw axe/get axe".
+
+Test all with "test grate/test bird/test dwarves".		
