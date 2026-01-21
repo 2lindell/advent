@@ -5,8 +5,9 @@
 		L - Location
 		O - Object with
 			D - Description based on property 0, 1, or 2
-		M - Message (with additional M for "modified")
+		M - Message (with additional M for "modified", T for text within code)
 		C - Class rankings
+		W - Wizard messages
 	I also commented if a description/scenery object came from Colossal Cave Revisited (ccr) or the Inform 6 version (I6)]
 
 Part 1 - Setup
@@ -515,9 +516,33 @@ Understand "cave" as a mistake ([M57]"I don't know where the cave is, but hereab
 
 Understand "cave" as a mistake ([M58]"I need more detailed instructions to do that.")
 
-Section - Misc actions
+Section - Save/Restore
 
 Understand the commands "suspend" and "pause" as "save".
+
+Savetime is a number that varies. Latency is a number that varies. Latency is usually 30.
+Check saving the game:
+	say [MT]"I can suspend your adventure for you so that you can resume later, but you will have to wait at least [latency] minutes before continuing.";
+	say [M200]"Is this acceptable?[line break]>";
+	unless player consents:
+		say [M54]"OK.";
+		stop the action.
+First carry out saving the game: now savetime is current timestamp.
+
+First carry out restoring the game: if the result of saving the game state is 2, stop the action.
+The restore the game rule response (B) is "[process restore]".
+Rejecting restore is a truth state that varies.
+To say process restore:
+	if current timestamp is less than savetime plus latency times 60:
+		say [WT]"This adventure was suspended a mere [(current timestamp minus savetime) divided by 60] minutes ago.";
+		if current timestamp is less than savetime plus latency times 20, say [W2]"Even wizards have to wait longer than that!";
+		otherwise say [W9]"I suggest you resume your adventure at a later time.";
+		now rejecting restore is true;
+		follow the immediately undo rule;
+	otherwise:
+		say [M54]"OK.[no line break]"
+
+Section - Misc actions
 
 Understand "hours" as a mistake ("[bracket]In this implementation, collosal cave is always open.[close bracket]").
 
@@ -556,6 +581,9 @@ To move the/-- player to (someplace - object) as going:
 To prevent undo:
 	now undo allowed is false.
 	
+To decide what number is the result of saving the game state:
+	(- VM_Save_Undo() -)
+
 Feefie count is a number that varies.
 To run the feefie magic (i - a number):
 	if feefie count is not i:
@@ -574,7 +602,7 @@ To run the feefie magic (i - a number):
 		if the location is In_Giant_Room, say [I6]"[paragraph break]A large nest full of golden eggs suddenly appears out of nowhere!";
 	otherwise:
 		increment the feefie count;
-		say "OK."
+		say [M54]"OK."
 
 Chapter 5 - Rules
 
@@ -592,10 +620,8 @@ Undo allowed is a truth state that varies. Undo allowed is true.
 
 Include (-
 [ Perform_Undo;
-	if (KIT_CONFIGURATION_BITMAP & PREVENT_UNDO_TCBIT) {
-		IMMEDIATELY_UNDO_RM('A'); new_line; return;
-	}
-	if (IterationsOfTurnSequence == 0) { IMMEDIATELY_UNDO_RM('B'); new_line; return; }
+	if (KIT_CONFIGURATION_BITMAP & PREVENT_UNDO_TCBIT) { IMMEDIATELY_UNDO_RM('A'); new_line; return; }
+	if (IterationsOfTurnSequence == 0 && ~~(+ rejecting restore +)) { IMMEDIATELY_UNDO_RM('B'); new_line; return; }
 	if (undo_flag == 0) { IMMEDIATELY_UNDO_RM('C'); new_line; return; }
 	if (undo_flag == 1) { IMMEDIATELY_UNDO_RM('D'); new_line; return; }
 	if (~~(+ undo allowed +)) { print "Previous turn cannot be undone.^^"; return; }
@@ -2742,7 +2768,7 @@ East is Different_Maze_2.
 
 [L132]Different_Maze_4 is a diffmaze room. "You are in a little maze of twisty passages, all different."
 Northwest is Different_Maze_1.
-Up is Different_Maze_3.drop
+Up is Different_Maze_3.
 South is Different_Maze_6.
 West is Different_Maze_7.
 Southwest is Different_Maze_8.
@@ -2840,7 +2866,7 @@ Section -
 [L140]Dead_End_14 is a deadend room.
 Understand "dead/end/near/vending/machine" as Dead_End_14.
 
-[O38]A vending machine is a closed container in Dead_End_14. [D0]"There is a massive vending machine here.  The instructions on the vending machine read: 'Drop coins here to receive fresh batteries.'". It is scenery.
+[O38]A vending machine is a closed container in Dead_End_14. [D0]"There is a massive vending machine here.  The instructions on the vending machine read: 'Drop coins here to receive fresh batteries.'". It is fixed in place.
 Understand "slot/massive/battery/coin" as the vending machine.
 Instead of dropping the coins in Dead_End_14, try inserting the noun into the vending machine.
 Instead of inserting the rare coins into the vending machine:
@@ -3015,4 +3041,17 @@ Test bird with "w/get cage/on/w/w/w/get bird/w/d/n/drop bird".
 
 Test dwarves with "u/get axe/throw axe/get axe/throw axe/get axe".
 
-Test all with "test grate/test bird/test dwarves".		
+Test all with "test grate/test bird/test dwarves".
+
+Chapter - Date and Time
+
+To decide what number is current timestamp:
+	(- getTimestamp(); -)
+
+Include (-
+Array t --> 3;
+[ getTimestamp;
+	if (glk_gestalt(gestalt_DateTime, 0) == 0) return 0;
+	glk_current_time(t);
+	return t-->1;
+]; -)
